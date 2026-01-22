@@ -47,6 +47,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        cover: {
+          "gradient-start": "hsl(var(--cover-gradient-start))",
+          "gradient-mid": "hsl(var(--cover-gradient-mid))",
+          "gradient-end": "hsl(var(--cover-gradient-end))",
+          accent: "hsl(var(--cover-accent))",
+          "text-light": "hsl(var(--cover-text-light))",
+          divider: "hsl(var(--cover-divider))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -57,6 +65,9 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      backgroundImage: {
+        'cover-gradient': 'linear-gradient(135deg, hsl(var(--cover-gradient-start)) 0%, hsl(var(--cover-gradient-mid)) 50%, hsl(var(--cover-gradient-end)) 100%)',
       },
       borderRadius: {
         lg: "var(--radius)",
