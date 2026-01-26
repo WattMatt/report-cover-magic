@@ -19,6 +19,8 @@ const Index = () => {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [customLogo, setCustomLogo] = useState<string | null>(null);
+  const [primaryLineColor, setPrimaryLineColor] = useState("#1565C0");
+  const [accentLineColor, setAccentLineColor] = useState("#D4A853");
 
   const handleDownload = async () => {
     setIsGenerating(true);
@@ -53,6 +55,8 @@ const Index = () => {
             month: "long",
             year: "numeric",
           }),
+          primaryLineColor,
+          accentLineColor,
         },
         logoBase64
       );
@@ -129,6 +133,10 @@ const Index = () => {
                 setDate={setDate}
                 customLogo={customLogo}
                 setCustomLogo={setCustomLogo}
+                primaryLineColor={primaryLineColor}
+                setPrimaryLineColor={setPrimaryLineColor}
+                accentLineColor={accentLineColor}
+                setAccentLineColor={setAccentLineColor}
               />
 
               <Button
@@ -188,6 +196,8 @@ const Index = () => {
                   year: "numeric",
                 })}
                 customLogo={customLogo}
+                primaryLineColor={primaryLineColor}
+                accentLineColor={accentLineColor}
               />
             </div>
           </motion.div>

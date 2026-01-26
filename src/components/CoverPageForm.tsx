@@ -24,6 +24,10 @@ interface CoverPageFormProps {
   setDate: (value: string) => void;
   customLogo: string | null;
   setCustomLogo: (value: string | null) => void;
+  primaryLineColor: string;
+  setPrimaryLineColor: (value: string) => void;
+  accentLineColor: string;
+  setAccentLineColor: (value: string) => void;
 }
 
 const CoverPageForm = ({
@@ -45,6 +49,10 @@ const CoverPageForm = ({
   setDate,
   customLogo,
   setCustomLogo,
+  primaryLineColor,
+  setPrimaryLineColor,
+  accentLineColor,
+  setAccentLineColor,
 }: CoverPageFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -230,6 +238,55 @@ const CoverPageForm = ({
           onChange={(e) => setDate(e.target.value)}
           className="bg-card border-border focus:ring-primary"
         />
+      </div>
+
+      {/* Line Color Customization */}
+      <div className="pt-4 border-t border-border">
+        <Label className="text-sm font-medium text-foreground mb-3 block">
+          Line Colors
+        </Label>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="primaryLineColor" className="text-xs text-muted-foreground">
+              Primary Lines (Blue)
+            </Label>
+            <div className="flex items-center gap-2">
+              <input
+                id="primaryLineColor"
+                type="color"
+                value={primaryLineColor}
+                onChange={(e) => setPrimaryLineColor(e.target.value)}
+                className="w-10 h-10 rounded cursor-pointer border border-border"
+              />
+              <Input
+                value={primaryLineColor}
+                onChange={(e) => setPrimaryLineColor(e.target.value)}
+                className="bg-card border-border focus:ring-primary font-mono text-sm uppercase"
+                placeholder="#1565C0"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="accentLineColor" className="text-xs text-muted-foreground">
+              Accent Lines (Gold)
+            </Label>
+            <div className="flex items-center gap-2">
+              <input
+                id="accentLineColor"
+                type="color"
+                value={accentLineColor}
+                onChange={(e) => setAccentLineColor(e.target.value)}
+                className="w-10 h-10 rounded cursor-pointer border border-border"
+              />
+              <Input
+                value={accentLineColor}
+                onChange={(e) => setAccentLineColor(e.target.value)}
+                className="bg-card border-border focus:ring-primary font-mono text-sm uppercase"
+                placeholder="#D4A853"
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
