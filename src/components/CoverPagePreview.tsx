@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import wmLogo from "@/assets/wm-logo.jpg";
 
 interface CoverPagePreviewProps {
+  reportTitle: string;
   projectName: string;
   projectLocation: string;
   clientName: string;
@@ -13,6 +14,7 @@ interface CoverPagePreviewProps {
 }
 
 const CoverPagePreview = ({
+  reportTitle,
   projectName,
   projectLocation,
   clientName,
@@ -22,6 +24,8 @@ const CoverPagePreview = ({
   date,
   customLogo,
 }: CoverPagePreviewProps) => {
+  // Split title into lines (split on newline or after ~15-20 chars for display)
+  const titleLines = reportTitle.split('\n').filter(line => line.trim());
   const logoSrc = customLogo || wmLogo;
 
   return (
@@ -67,12 +71,11 @@ const CoverPagePreview = ({
           transition={{ delay: 0.4 }}
           className="text-center mb-3"
         >
-          <h1 className="text-3xl md:text-4xl font-bold text-primary tracking-wide">
-            ELECTRICAL LOAD
-          </h1>
-          <h1 className="text-3xl md:text-4xl font-bold text-primary tracking-wide">
-            ESTIMATE REPORT
-          </h1>
+          {titleLines.map((line, index) => (
+            <h1 key={index} className="text-3xl md:text-4xl font-bold text-primary tracking-wide">
+              {line.toUpperCase()}
+            </h1>
+          ))}
         </motion.div>
         
         {/* Gold accent line */}
