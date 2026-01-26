@@ -9,6 +9,7 @@ interface CoverPagePreviewProps {
   revision: string;
   preparedBy: string;
   date: string;
+  customLogo?: string | null;
 }
 
 const CoverPagePreview = ({
@@ -19,7 +20,10 @@ const CoverPagePreview = ({
   revision,
   preparedBy,
   date,
+  customLogo,
 }: CoverPagePreviewProps) => {
+  const logoSrc = customLogo || wmLogo;
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -38,11 +42,12 @@ const CoverPagePreview = ({
         {/* Logo */}
         <div className="flex justify-center mb-4">
           <motion.img
+            key={logoSrc}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            src={wmLogo}
-            alt="WM Logo"
+            src={logoSrc}
+            alt="Company Logo"
             className="h-16 object-contain"
           />
         </div>

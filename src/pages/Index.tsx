@@ -17,41 +17,48 @@ const Index = () => {
   const [preparedBy, setPreparedBy] = useState("WM Engineering");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [customLogo, setCustomLogo] = useState<string | null>(null);
 
   const handleDownload = async () => {
     setIsGenerating(true);
     try {
-      // Convert logo to base64
-      const response = await fetch(wmLogo);
-      const blob = await response.blob();
-      const reader = new FileReader();
-      
-      reader.onloadend = async () => {
-        const base64 = reader.result as string;
-        await generateWordDocument(
-          {
-            projectName,
-            projectLocation,
-            clientName,
-            documentNumber,
-            revision,
-            preparedBy,
-            date: new Date(date).toLocaleDateString("en-AU", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            }),
-          },
-          base64
-        );
-        toast.success("Cover page downloaded successfully!");
-        setIsGenerating(false);
-      };
-      
-      reader.readAsDataURL(blob);
+      let logoBase64: string;
+
+      if (customLogo) {
+        // Use custom logo directly (already base64)
+        logoBase64 = customLogo;
+      } else {
+        // Convert default logo to base64
+        const response = await fetch(wmLogo);
+        const blob = await response.blob();
+        logoBase64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        });
+      }
+
+      await generateWordDocument(
+        {
+          projectName,
+          projectLocation,
+          clientName,
+          documentNumber,
+          revision,
+          preparedBy,
+          date: new Date(date).toLocaleDateString("en-AU", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }),
+        },
+        logoBase64
+      );
+      toast.success("Cover page downloaded successfully!");
     } catch (error) {
       console.error("Error generating document:", error);
       toast.error("Failed to generate document. Please try again.");
+    } finally {
       setIsGenerating(false);
     }
   };
@@ -116,6 +123,8 @@ const Index = () => {
                 setPreparedBy={setPreparedBy}
                 date={date}
                 setDate={setDate}
+                customLogo={customLogo}
+                setCustomLogo={setCustomLogo}
               />
 
               <Button
@@ -173,6 +182,7 @@ const Index = () => {
                   month: "long",
                   year: "numeric",
                 })}
+                customLogo={customLogo}
               />
             </div>
           </motion.div>

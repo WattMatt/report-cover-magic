@@ -1,5 +1,8 @@
+import { useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Upload, X, Image } from "lucide-react";
 
 interface CoverPageFormProps {
   projectName: string;
@@ -16,6 +19,8 @@ interface CoverPageFormProps {
   setPreparedBy: (value: string) => void;
   date: string;
   setDate: (value: string) => void;
+  customLogo: string | null;
+  setCustomLogo: (value: string | null) => void;
 }
 
 const CoverPageForm = ({
@@ -33,9 +38,85 @@ const CoverPageForm = ({
   setPreparedBy,
   date,
   setDate,
+  customLogo,
+  setCustomLogo,
 }: CoverPageFormProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCustomLogo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setCustomLogo(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
   return (
     <div className="space-y-4">
+      {/* Logo Upload Section */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium text-foreground">
+          Company Logo
+        </Label>
+        <div className="flex items-center gap-3">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleLogoUpload}
+            className="hidden"
+          />
+          {customLogo ? (
+            <div className="flex items-center gap-3 w-full">
+              <div className="h-12 w-20 bg-muted rounded-md overflow-hidden flex items-center justify-center border border-border">
+                <img
+                  src={customLogo}
+                  alt="Custom logo"
+                  className="h-full w-full object-contain"
+                />
+              </div>
+              <span className="text-sm text-muted-foreground flex-1 truncate">
+                Custom logo uploaded
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleRemoveLogo}
+                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <Upload className="h-4 w-4" />
+              Upload custom logo
+            </Button>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Leave empty to use the default WM logo
+        </p>
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="projectName" className="text-sm font-medium text-foreground">
           Project Name
