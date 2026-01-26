@@ -27,6 +27,8 @@ interface CoverPageData {
   revision: string;
   preparedBy: string;
   date: string;
+  primaryLineColor: string;
+  accentLineColor: string;
 }
 
 export const generateWordDocument = async (
@@ -35,6 +37,10 @@ export const generateWordDocument = async (
 ) => {
   // Strip the data URL prefix if present
   const base64Data = logoBase64.replace(/^data:image\/\w+;base64,/, "");
+  
+  // Convert hex colors to docx format (remove # prefix)
+  const primaryColor = data.primaryLineColor.replace("#", "");
+  const accentColor = data.accentLineColor.replace("#", "");
   
   // Split title into lines
   const titleLines = data.reportTitle.split('\n').filter(line => line.trim());
@@ -49,7 +55,7 @@ export const generateWordDocument = async (
           text: line.toUpperCase(),
           bold: true,
           size: 72,
-          color: "1565C0",
+          color: primaryColor,
           font: "Arial",
         }),
       ],
@@ -90,7 +96,7 @@ export const generateWordDocument = async (
           new Paragraph({
             border: {
               bottom: {
-                color: "1565C0",
+                color: primaryColor,
                 size: 24,
                 style: BorderStyle.SINGLE,
               },
@@ -102,14 +108,14 @@ export const generateWordDocument = async (
           // Main Title
           ...titleParagraphs,
 
-          // Gold accent line
+          // Accent line
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { before: 200, after: 600 },
             children: [
               new TextRun({
                 text: "━━━━━━━━━━━━━━━━━━━━━━━━━━",
-                color: "D4A853",
+                color: accentColor,
                 size: 28,
               }),
             ],
@@ -138,7 +144,7 @@ export const generateWordDocument = async (
               new TextRun({
                 text: "RETAIL DEVELOPMENT",
                 size: 32,
-                color: "1976D2",
+                color: primaryColor,
                 font: "Arial",
                 italics: true,
               }),
@@ -163,7 +169,7 @@ export const generateWordDocument = async (
           new Paragraph({
             border: {
               top: {
-                color: "1565C0",
+                color: primaryColor,
                 size: 12,
                 style: BorderStyle.SINGLE,
               },
@@ -193,7 +199,7 @@ export const generateWordDocument = async (
                             text: "CLIENT:",
                             bold: true,
                             size: 22,
-                            color: "1565C0",
+                            color: primaryColor,
                             font: "Arial",
                           }),
                         ],
@@ -240,7 +246,7 @@ export const generateWordDocument = async (
                             text: "DOCUMENT NO:",
                             bold: true,
                             size: 22,
-                            color: "1565C0",
+                            color: primaryColor,
                             font: "Arial",
                           }),
                         ],
@@ -287,7 +293,7 @@ export const generateWordDocument = async (
                             text: "REVISION:",
                             bold: true,
                             size: 22,
-                            color: "1565C0",
+                            color: primaryColor,
                             font: "Arial",
                           }),
                         ],
@@ -334,7 +340,7 @@ export const generateWordDocument = async (
                             text: "PREPARED BY:",
                             bold: true,
                             size: 22,
-                            color: "1565C0",
+                            color: primaryColor,
                             font: "Arial",
                           }),
                         ],
@@ -381,7 +387,7 @@ export const generateWordDocument = async (
                             text: "DATE:",
                             bold: true,
                             size: 22,
-                            color: "1565C0",
+                            color: primaryColor,
                             font: "Arial",
                           }),
                         ],
@@ -418,7 +424,7 @@ export const generateWordDocument = async (
           new Paragraph({
             border: {
               bottom: {
-                color: "D4A853",
+                color: accentColor,
                 size: 18,
                 style: BorderStyle.SINGLE,
               },

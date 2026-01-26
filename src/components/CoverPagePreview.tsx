@@ -11,6 +11,8 @@ interface CoverPagePreviewProps {
   preparedBy: string;
   date: string;
   customLogo?: string | null;
+  primaryLineColor: string;
+  accentLineColor: string;
 }
 
 const CoverPagePreview = ({
@@ -23,6 +25,8 @@ const CoverPagePreview = ({
   preparedBy,
   date,
   customLogo,
+  primaryLineColor,
+  accentLineColor,
 }: CoverPagePreviewProps) => {
   // Split title into lines (split on newline or after ~15-20 chars for display)
   const titleLines = reportTitle.split('\n').filter(line => line.trim());
@@ -38,8 +42,8 @@ const CoverPagePreview = ({
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-cover-gradient-start/5 via-transparent to-cover-gradient-end/10" />
       
-      {/* Top blue accent bar */}
-      <div className="absolute top-0 left-0 right-0 h-2 bg-cover-gradient" />
+      {/* Top accent bar */}
+      <div className="absolute top-0 left-0 right-0 h-2" style={{ backgroundColor: primaryLineColor }} />
       
       {/* Content */}
       <div className="relative h-full flex flex-col p-8 pt-6">
@@ -56,12 +60,13 @@ const CoverPagePreview = ({
           />
         </div>
         
-        {/* Blue decorative line */}
+        {/* Primary decorative line */}
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="h-1 bg-primary mb-6"
+          className="h-1 mb-6"
+          style={{ backgroundColor: primaryLineColor }}
         />
         
         {/* Main Title */}
@@ -78,14 +83,14 @@ const CoverPagePreview = ({
           ))}
         </motion.div>
         
-        {/* Gold accent line */}
+        {/* Accent line */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
           className="flex justify-center my-4"
         >
-          <div className="w-48 h-0.5 bg-cover-divider" />
+          <div className="w-48 h-0.5" style={{ backgroundColor: accentLineColor }} />
         </motion.div>
         
         {/* Project Name */}
@@ -109,12 +114,13 @@ const CoverPagePreview = ({
         {/* Spacer */}
         <div className="flex-1 min-h-6" />
         
-        {/* Blue separator line */}
+        {/* Primary separator line */}
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 0.7, duration: 0.5 }}
-          className="h-0.5 bg-primary/50 mb-4"
+          className="h-0.5 mb-4"
+          style={{ backgroundColor: primaryLineColor, opacity: 0.5 }}
         />
         
         {/* Project Details */}
@@ -146,12 +152,13 @@ const CoverPagePreview = ({
           </div>
         </motion.div>
         
-        {/* Gold footer line */}
+        {/* Accent footer line */}
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 0.9, duration: 0.5 }}
-          className="h-1 bg-cover-divider mt-4"
+          className="h-1 mt-4"
+          style={{ backgroundColor: accentLineColor }}
         />
         
         {/* Confidential footer */}
@@ -166,8 +173,8 @@ const CoverPagePreview = ({
       </div>
       
       {/* Decorative corner accents */}
-      <div className="absolute top-2 right-4 w-8 h-8 border-t-2 border-r-2 border-cover-divider/50" />
-      <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-cover-divider/50" />
+      <div className="absolute top-2 right-4 w-8 h-8 border-t-2 border-r-2" style={{ borderColor: `${accentLineColor}80` }} />
+      <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2" style={{ borderColor: `${accentLineColor}80` }} />
     </motion.div>
   );
 };
