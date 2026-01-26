@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import wmLogo from "@/assets/wm-logo.jpg";
 
 const Index = () => {
+  const [reportTitle, setReportTitle] = useState("Electrical Load\nEstimate Report");
   const [projectName, setProjectName] = useState("Central Plaza Shopping Centre");
   const [projectLocation, setProjectLocation] = useState("123 Main Street, Sydney NSW 2000");
   const [clientName, setClientName] = useState("ABC Developments Pty Ltd");
@@ -40,6 +41,7 @@ const Index = () => {
 
       await generateWordDocument(
         {
+          reportTitle,
           projectName,
           projectLocation,
           clientName,
@@ -109,6 +111,8 @@ const Index = () => {
 
             <div className="bg-card rounded-xl p-6 shadow-lg border border-border">
               <CoverPageForm
+                reportTitle={reportTitle}
+                setReportTitle={setReportTitle}
                 projectName={projectName}
                 setProjectName={setProjectName}
                 projectLocation={projectLocation}
@@ -171,6 +175,7 @@ const Index = () => {
 
             <div className="flex justify-center">
               <CoverPagePreview
+                reportTitle={reportTitle}
                 projectName={projectName}
                 projectLocation={projectLocation}
                 clientName={clientName}

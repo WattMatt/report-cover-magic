@@ -19,6 +19,7 @@ import { saveAs } from "file-saver";
 import { Packer } from "docx";
 
 interface CoverPageData {
+  reportTitle: string;
   projectName: string;
   projectLocation: string;
   clientName: string;
@@ -34,6 +35,26 @@ export const generateWordDocument = async (
 ) => {
   // Strip the data URL prefix if present
   const base64Data = logoBase64.replace(/^data:image\/\w+;base64,/, "");
+  
+  // Split title into lines
+  const titleLines = data.reportTitle.split('\n').filter(line => line.trim());
+  
+  // Create title paragraphs
+  const titleParagraphs = titleLines.map((line, index) => 
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: index === 0 ? 400 : 0, after: index === titleLines.length - 1 ? 400 : 200 },
+      children: [
+        new TextRun({
+          text: line.toUpperCase(),
+          bold: true,
+          size: 72,
+          color: "1565C0",
+          font: "Arial",
+        }),
+      ],
+    })
+  );
 
   const doc = new Document({
     sections: [
@@ -79,33 +100,7 @@ export const generateWordDocument = async (
           }),
 
           // Main Title
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
-            spacing: { before: 400, after: 200 },
-            children: [
-              new TextRun({
-                text: "ELECTRICAL LOAD",
-                bold: true,
-                size: 72,
-                color: "1565C0",
-                font: "Arial",
-              }),
-            ],
-          }),
-
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
-            spacing: { after: 400 },
-            children: [
-              new TextRun({
-                text: "ESTIMATE REPORT",
-                bold: true,
-                size: 72,
-                color: "1565C0",
-                font: "Arial",
-              }),
-            ],
-          }),
+          ...titleParagraphs,
 
           // Gold accent line
           new Paragraph({

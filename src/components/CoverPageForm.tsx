@@ -1,10 +1,13 @@
 import { useRef } from "react";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Upload, X, Image } from "lucide-react";
+import { Upload, X } from "lucide-react";
 
 interface CoverPageFormProps {
+  reportTitle: string;
+  setReportTitle: (value: string) => void;
   projectName: string;
   setProjectName: (value: string) => void;
   projectLocation: string;
@@ -24,6 +27,8 @@ interface CoverPageFormProps {
 }
 
 const CoverPageForm = ({
+  reportTitle,
+  setReportTitle,
   projectName,
   setProjectName,
   projectLocation,
@@ -114,6 +119,23 @@ const CoverPageForm = ({
         </div>
         <p className="text-xs text-muted-foreground">
           Leave empty to use the default WM logo
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="reportTitle" className="text-sm font-medium text-foreground">
+          Report Title
+        </Label>
+        <Textarea
+          id="reportTitle"
+          value={reportTitle}
+          onChange={(e) => setReportTitle(e.target.value)}
+          placeholder="e.g., Electrical Load&#10;Estimate Report"
+          className="bg-card border-border focus:ring-primary resize-none"
+          rows={2}
+        />
+        <p className="text-xs text-muted-foreground">
+          Use Enter/newline to split into multiple lines
         </p>
       </div>
 
