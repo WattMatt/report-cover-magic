@@ -29,6 +29,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { generateMultiPageDocument, PageConfig, PageType } from "@/utils/generateMultiPageDocument";
 import { useCloudReportTemplates, ReportTemplate } from "@/hooks/useCloudReportTemplates";
+import { DocumentOutlinePreview } from "@/components/DocumentOutlinePreview";
 import wmLogo from "@/assets/wm-logo.jpg";
 
 const PAGE_TYPE_INFO = {
@@ -605,36 +606,13 @@ const MultiPageBuilderPage = () => {
             )}
           </div>
 
-          {/* Preview Summary */}
+          {/* Document Outline Preview */}
           {pages.length > 0 && (
-            <div className="bg-card rounded-xl p-4 shadow-lg border border-border">
-              <Label className="text-sm mb-3 block">Document Preview</Label>
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {pages.map((item, index) => {
-                  const info = PAGE_TYPE_INFO[item.config.type];
-                  return (
-                    <motion.div
-                      key={item.id}
-                      initial={{ scale: 0.9, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      className="flex-shrink-0 w-24 h-32 bg-white rounded border shadow-sm flex flex-col items-center justify-center p-2"
-                      style={{ borderTopColor: primaryLineColor, borderTopWidth: 3 }}
-                    >
-                      <div
-                        className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold mb-1"
-                        style={{ backgroundColor: primaryLineColor }}
-                      >
-                        {index + 1}
-                      </div>
-                      <info.icon className="h-6 w-6 text-muted-foreground mb-1" />
-                      <span className="text-[10px] text-center text-muted-foreground leading-tight">
-                        {info.label}
-                      </span>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
+            <DocumentOutlinePreview
+              pages={pages}
+              primaryLineColor={primaryLineColor}
+              accentLineColor={accentLineColor}
+            />
           )}
         </div>
       </div>
