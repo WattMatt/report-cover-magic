@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 interface MetricItem {
   id: string;
@@ -56,6 +57,11 @@ const SummaryTablePage = () => {
   const handleDownload = () => {
     toast.success("Summary table downloaded!");
   };
+
+  useKeyboardShortcuts({
+    onReset: handleReset,
+    onDownload: handleDownload,
+  });
 
   return (
     <div className="min-h-screen bg-background p-6">

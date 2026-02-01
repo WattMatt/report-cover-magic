@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 interface FeatureRow {
   id: string;
@@ -87,6 +88,11 @@ const ComparisonTablePage = () => {
   const handleDownload = () => {
     toast.success("Comparison table downloaded!");
   };
+
+  useKeyboardShortcuts({
+    onReset: handleReset,
+    onDownload: handleDownload,
+  });
 
   const renderCellValue = (value: string) => {
     if (value === "yes") return <Check className="h-5 w-5 text-green-600 mx-auto" />;

@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 interface TableRowData {
   id: string;
@@ -79,6 +80,11 @@ const DataTablePage = () => {
   const handleDownload = () => {
     toast.success("Table page downloaded!");
   };
+
+  useKeyboardShortcuts({
+    onReset: handleReset,
+    onDownload: handleDownload,
+  });
 
   return (
     <div className="min-h-screen bg-background p-6">

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { generateTableOfContents } from "@/utils/generateTableOfContents";
 import PageTemplateManager from "@/components/PageTemplateManager";
 import { PageTemplate } from "@/hooks/useCloudPageTemplates";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 interface TOCEntry {
   title: string;
@@ -72,6 +73,11 @@ const TableOfContentsPage = () => {
       console.error(error);
     }
   };
+
+  useKeyboardShortcuts({
+    onReset: handleReset,
+    onDownload: handleDownload,
+  });
 
   const getCurrentData = (): TOCTemplateData => ({
     documentTitle,
