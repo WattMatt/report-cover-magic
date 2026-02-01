@@ -4,9 +4,11 @@ import { Download, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CoverPagePreview from "@/components/CoverPagePreview";
 import CoverPageForm from "@/components/CoverPageForm";
+import TemplateManager from "@/components/TemplateManager";
 import { generateWordDocument } from "@/utils/generateWordDocument";
 import { toast } from "sonner";
 import { useTheme } from "@/contexts/ThemeContext";
+import { CoverPageTemplate } from "@/hooks/useTemplates";
 import wmLogo from "@/assets/wm-logo.jpg";
 
 const DEFAULTS = {
@@ -45,6 +47,31 @@ const CoverPage = () => {
     setPreparedBy(DEFAULTS.preparedBy);
     setDate(new Date().toISOString().split("T")[0]);
     toast.success("Form reset to defaults");
+  };
+
+  const getCurrentTemplateData = (): CoverPageTemplate["data"] => ({
+    reportTitle,
+    projectName,
+    projectSubtitle,
+    projectLocation,
+    clientName,
+    documentNumber,
+    revision,
+    preparedBy,
+    primaryLineColor,
+    accentLineColor,
+  });
+
+  const handleLoadTemplate = (data: CoverPageTemplate["data"]) => {
+    setReportTitle(data.reportTitle);
+    setProjectName(data.projectName);
+    setProjectSubtitle(data.projectSubtitle);
+    setProjectLocation(data.projectLocation);
+    setClientName(data.clientName);
+    setDocumentNumber(data.documentNumber);
+    setRevision(data.revision);
+    setPreparedBy(data.preparedBy);
+    toast.success("Template loaded!");
   };
 
   const handleDownload = async () => {
@@ -104,14 +131,21 @@ const CoverPage = () => {
             transition={{ delay: 0.2 }}
             className="space-y-6"
           >
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">
-                Cover Page
-              </h2>
-              <p className="text-muted-foreground">
-                Fill in the project information to customize your cover page.
-              </p>
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground mb-2">
+                  Cover Page
+                </h2>
+                <p className="text-muted-foreground">
+                  Fill in the project information to customize your cover page.
+                </p>
+              </div>
             </div>
+
+            <TemplateManager
+              currentData={getCurrentTemplateData()}
+              onLoadTemplate={handleLoadTemplate}
+            />
 
             <div className="bg-card rounded-xl p-6 shadow-lg border border-border">
               <CoverPageForm
