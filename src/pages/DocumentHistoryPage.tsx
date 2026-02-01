@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Download, Plus, Trash2 } from "lucide-react";
+import { Download, Plus, Trash2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "@/contexts/ThemeContext";
+import { toast } from "sonner";
 
 interface RevisionEntry {
   revision: string;
@@ -13,14 +14,16 @@ interface RevisionEntry {
   description: string;
 }
 
+const DEFAULT_REVISIONS: RevisionEntry[] = [
+  { revision: "A", date: "15 Jan 2026", author: "J. Smith", description: "Initial issue for review" },
+  { revision: "B", date: "22 Jan 2026", author: "J. Smith", description: "Incorporated client comments" },
+  { revision: "C", date: "30 Jan 2026", author: "M. Jones", description: "Final issue for construction" },
+];
+
 const DocumentHistoryPage = () => {
   const { primaryLineColor, accentLineColor } = useTheme();
   const [title, setTitle] = useState("Document Revision History");
-  const [revisions, setRevisions] = useState<RevisionEntry[]>([
-    { revision: "A", date: "15 Jan 2026", author: "J. Smith", description: "Initial issue for review" },
-    { revision: "B", date: "22 Jan 2026", author: "J. Smith", description: "Incorporated client comments" },
-    { revision: "C", date: "30 Jan 2026", author: "M. Jones", description: "Final issue for construction" },
-  ]);
+  const [revisions, setRevisions] = useState<RevisionEntry[]>([...DEFAULT_REVISIONS]);
 
   const updateRevision = (index: number, field: keyof RevisionEntry, value: string) => {
     const newRevisions = [...revisions];
@@ -34,6 +37,12 @@ const DocumentHistoryPage = () => {
 
   const removeRevision = (index: number) => {
     setRevisions(revisions.filter((_, i) => i !== index));
+  };
+
+  const handleReset = () => {
+    setTitle("Document Revision History");
+    setRevisions([...DEFAULT_REVISIONS]);
+    toast.success("Form reset to defaults");
   };
 
   return (
@@ -105,10 +114,16 @@ const DocumentHistoryPage = () => {
                 </Button>
               </div>
 
-              <Button className="w-full mt-4">
-                <Download className="h-4 w-4 mr-2" />
-                Download Word Document
-              </Button>
+              <div className="flex gap-3 mt-4">
+                <Button variant="outline" onClick={handleReset} className="flex-1">
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Reset
+                </Button>
+                <Button className="flex-[2]">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
             </div>
           </div>
 

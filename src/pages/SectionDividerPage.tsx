@@ -1,16 +1,30 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Download } from "lucide-react";
+import { Download, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "@/contexts/ThemeContext";
+import { toast } from "sonner";
+
+const DEFAULTS = {
+  sectionNumber: "Section 1",
+  sectionTitle: "Introduction",
+  sectionSubtitle: "Project Overview & Background",
+};
 
 const SectionDividerPage = () => {
   const { primaryLineColor, accentLineColor } = useTheme();
-  const [sectionNumber, setSectionNumber] = useState("Section 1");
-  const [sectionTitle, setSectionTitle] = useState("Introduction");
-  const [sectionSubtitle, setSectionSubtitle] = useState("Project Overview & Background");
+  const [sectionNumber, setSectionNumber] = useState(DEFAULTS.sectionNumber);
+  const [sectionTitle, setSectionTitle] = useState(DEFAULTS.sectionTitle);
+  const [sectionSubtitle, setSectionSubtitle] = useState(DEFAULTS.sectionSubtitle);
+
+  const handleReset = () => {
+    setSectionNumber(DEFAULTS.sectionNumber);
+    setSectionTitle(DEFAULTS.sectionTitle);
+    setSectionSubtitle(DEFAULTS.sectionSubtitle);
+    toast.success("Form reset to defaults");
+  };
 
   return (
     <div className="flex-1 p-8">
@@ -55,10 +69,16 @@ const SectionDividerPage = () => {
                 />
               </div>
 
-              <Button className="w-full mt-4">
-                <Download className="h-4 w-4 mr-2" />
-                Download Word Document
-              </Button>
+              <div className="flex gap-3 mt-4">
+                <Button variant="outline" onClick={handleReset} className="flex-1">
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Reset
+                </Button>
+                <Button className="flex-[2]">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
             </div>
           </div>
 
