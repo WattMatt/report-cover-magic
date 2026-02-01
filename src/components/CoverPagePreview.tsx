@@ -4,6 +4,7 @@ import wmLogo from "@/assets/wm-logo.jpg";
 interface CoverPagePreviewProps {
   reportTitle: string;
   projectName: string;
+  projectSubtitle: string;
   projectLocation: string;
   clientName: string;
   documentNumber: string;
@@ -18,6 +19,7 @@ interface CoverPagePreviewProps {
 const CoverPagePreview = ({
   reportTitle,
   projectName,
+  projectSubtitle,
   projectLocation,
   clientName,
   documentNumber,
@@ -103,9 +105,11 @@ const CoverPagePreview = ({
           <h2 className="text-xl md:text-2xl font-bold text-foreground uppercase tracking-wider">
             {projectName}
           </h2>
-          <p className="text-base text-accent italic font-medium mt-1">
-            Retail Development
-          </p>
+          {projectSubtitle && (
+            <p className="text-base text-accent italic font-medium mt-1">
+              {projectSubtitle}
+            </p>
+          )}
           <p className="text-sm text-muted-foreground mt-1">
             {projectLocation}
           </p>

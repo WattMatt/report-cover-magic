@@ -11,6 +11,7 @@ import wmLogo from "@/assets/wm-logo.jpg";
 const Index = () => {
   const [reportTitle, setReportTitle] = useState("Electrical Load\nEstimate Report");
   const [projectName, setProjectName] = useState("Central Plaza Shopping Centre");
+  const [projectSubtitle, setProjectSubtitle] = useState("Retail Development");
   const [projectLocation, setProjectLocation] = useState("123 Main Street, Sydney NSW 2000");
   const [clientName, setClientName] = useState("ABC Developments Pty Ltd");
   const [documentNumber, setDocumentNumber] = useState("ELE-RPT-001");
@@ -45,6 +46,7 @@ const Index = () => {
         {
           reportTitle,
           projectName,
+          projectSubtitle,
           projectLocation,
           clientName,
           documentNumber,
@@ -119,6 +121,8 @@ const Index = () => {
                 setReportTitle={setReportTitle}
                 projectName={projectName}
                 setProjectName={setProjectName}
+                projectSubtitle={projectSubtitle}
+                setProjectSubtitle={setProjectSubtitle}
                 projectLocation={projectLocation}
                 setProjectLocation={setProjectLocation}
                 clientName={clientName}
@@ -185,6 +189,7 @@ const Index = () => {
               <CoverPagePreview
                 reportTitle={reportTitle}
                 projectName={projectName}
+                projectSubtitle={projectSubtitle}
                 projectLocation={projectLocation}
                 clientName={clientName}
                 documentNumber={documentNumber}

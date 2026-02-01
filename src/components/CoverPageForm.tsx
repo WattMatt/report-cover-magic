@@ -19,6 +19,8 @@ interface CoverPageFormProps {
   setReportTitle: (value: string) => void;
   projectName: string;
   setProjectName: (value: string) => void;
+  projectSubtitle: string;
+  setProjectSubtitle: (value: string) => void;
   projectLocation: string;
   setProjectLocation: (value: string) => void;
   clientName: string;
@@ -44,6 +46,8 @@ const CoverPageForm = ({
   setReportTitle,
   projectName,
   setProjectName,
+  projectSubtitle,
+  setProjectSubtitle,
   projectLocation,
   setProjectLocation,
   clientName,
@@ -167,6 +171,22 @@ const CoverPageForm = ({
           placeholder="Enter project name"
           className="bg-card border-border focus:ring-primary"
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="projectSubtitle" className="text-sm font-medium text-foreground">
+          Project Subtitle
+        </Label>
+        <Input
+          id="projectSubtitle"
+          value={projectSubtitle}
+          onChange={(e) => setProjectSubtitle(e.target.value)}
+          placeholder="e.g., Retail Development"
+          className="bg-card border-border focus:ring-primary"
+        />
+        <p className="text-xs text-muted-foreground">
+          Displayed in italics below the project name
+        </p>
       </div>
 
       <div className="space-y-2">
