@@ -14,6 +14,12 @@ import DocumentHistoryPage from "./pages/DocumentHistoryPage";
 import MultiPageBuilderPage from "./pages/MultiPageBuilderPage";
 import ProfilePage from "./pages/ProfilePage";
 import AuthPage from "./pages/AuthPage";
+import BarLineChartPage from "./pages/BarLineChartPage";
+import PieChartPage from "./pages/PieChartPage";
+import DashboardPage from "./pages/DashboardPage";
+import DataTablePage from "./pages/DataTablePage";
+import ComparisonTablePage from "./pages/ComparisonTablePage";
+import SummaryTablePage from "./pages/SummaryTablePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +40,12 @@ const App = () => (
                 <Route path="/executive-summary" element={<ExecutiveSummaryPage />} />
                 <Route path="/section-divider" element={<SectionDividerPage />} />
                 <Route path="/document-history" element={<DocumentHistoryPage />} />
+                <Route path="/bar-line-chart" element={<BarLineChartPage />} />
+                <Route path="/pie-chart" element={<PieChartPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/data-table" element={<DataTablePage />} />
+                <Route path="/comparison-table" element={<ComparisonTablePage />} />
+                <Route path="/summary-table" element={<SummaryTablePage />} />
                 <Route path="/multi-page-builder" element={<MultiPageBuilderPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
               </Route>
