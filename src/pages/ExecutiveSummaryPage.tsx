@@ -1,36 +1,50 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Download } from "lucide-react";
+import { Download, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "@/contexts/ThemeContext";
+import { toast } from "sonner";
 
-const ExecutiveSummaryPage = () => {
-  const { primaryLineColor, accentLineColor } = useTheme();
-  const [title, setTitle] = useState("Executive Summary");
-  const [projectName, setProjectName] = useState("Central Plaza Shopping Centre");
-  const [summaryText, setSummaryText] = useState(
-    `This report presents the electrical load estimate for the proposed retail development at Central Plaza Shopping Centre.
+const DEFAULTS = {
+  title: "Executive Summary",
+  projectName: "Central Plaza Shopping Centre",
+  summaryText: `This report presents the electrical load estimate for the proposed retail development at Central Plaza Shopping Centre.
 
 Key findings include:
 • Total connected load: 2,450 kVA
 • Maximum demand: 1,960 kVA (80% diversity)
 • Recommended supply: 2,500 kVA transformer capacity
 
-The analysis indicates that the existing infrastructure will require upgrades to accommodate the projected electrical demands of the development.`
-  );
-  const [highlights, setHighlights] = useState([
+The analysis indicates that the existing infrastructure will require upgrades to accommodate the projected electrical demands of the development.`,
+  highlights: [
     { label: "Total Load", value: "2,450 kVA" },
     { label: "Max Demand", value: "1,960 kVA" },
     { label: "Supply Rating", value: "2,500 kVA" },
-  ]);
+  ],
+};
+
+const ExecutiveSummaryPage = () => {
+  const { primaryLineColor, accentLineColor } = useTheme();
+  const [title, setTitle] = useState(DEFAULTS.title);
+  const [projectName, setProjectName] = useState(DEFAULTS.projectName);
+  const [summaryText, setSummaryText] = useState(DEFAULTS.summaryText);
+  const [highlights, setHighlights] = useState([...DEFAULTS.highlights]);
 
   const updateHighlight = (index: number, field: "label" | "value", value: string) => {
     const newHighlights = [...highlights];
     newHighlights[index][field] = value;
     setHighlights(newHighlights);
+  };
+
+  const handleReset = () => {
+    setTitle(DEFAULTS.title);
+    setProjectName(DEFAULTS.projectName);
+    setSummaryText(DEFAULTS.summaryText);
+    setHighlights([...DEFAULTS.highlights]);
+    toast.success("Form reset to defaults");
   };
 
   return (
@@ -95,10 +109,16 @@ The analysis indicates that the existing infrastructure will require upgrades to
                 ))}
               </div>
 
-              <Button className="w-full mt-4">
-                <Download className="h-4 w-4 mr-2" />
-                Download Word Document
-              </Button>
+              <div className="flex gap-3 mt-4">
+                <Button variant="outline" onClick={handleReset} className="flex-1">
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Reset
+                </Button>
+                <Button className="flex-[2]">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
             </div>
           </div>
 

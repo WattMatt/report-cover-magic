@@ -1,30 +1,33 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Download } from "lucide-react";
+import { Download, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "@/contexts/ThemeContext";
+import { toast } from "sonner";
 
 interface TOCEntry {
   title: string;
   page: string;
 }
 
+const DEFAULT_ENTRIES: TOCEntry[] = [
+  { title: "Executive Summary", page: "3" },
+  { title: "1. Introduction", page: "5" },
+  { title: "2. Scope of Work", page: "7" },
+  { title: "3. Electrical Load Analysis", page: "10" },
+  { title: "4. Distribution System Design", page: "15" },
+  { title: "5. Calculations & Results", page: "20" },
+  { title: "6. Recommendations", page: "25" },
+  { title: "Appendix A - Load Schedules", page: "28" },
+  { title: "Appendix B - Single Line Diagrams", page: "32" },
+];
+
 const TableOfContentsPage = () => {
   const { primaryLineColor, accentLineColor } = useTheme();
   const [documentTitle, setDocumentTitle] = useState("Table of Contents");
-  const [entries, setEntries] = useState<TOCEntry[]>([
-    { title: "Executive Summary", page: "3" },
-    { title: "1. Introduction", page: "5" },
-    { title: "2. Scope of Work", page: "7" },
-    { title: "3. Electrical Load Analysis", page: "10" },
-    { title: "4. Distribution System Design", page: "15" },
-    { title: "5. Calculations & Results", page: "20" },
-    { title: "6. Recommendations", page: "25" },
-    { title: "Appendix A - Load Schedules", page: "28" },
-    { title: "Appendix B - Single Line Diagrams", page: "32" },
-  ]);
+  const [entries, setEntries] = useState<TOCEntry[]>(DEFAULT_ENTRIES);
 
   const updateEntry = (index: number, field: keyof TOCEntry, value: string) => {
     const newEntries = [...entries];
@@ -38,6 +41,12 @@ const TableOfContentsPage = () => {
 
   const removeEntry = (index: number) => {
     setEntries(entries.filter((_, i) => i !== index));
+  };
+
+  const handleReset = () => {
+    setDocumentTitle("Table of Contents");
+    setEntries([...DEFAULT_ENTRIES]);
+    toast.success("Form reset to defaults");
   };
 
   return (
@@ -96,10 +105,16 @@ const TableOfContentsPage = () => {
                 </Button>
               </div>
 
-              <Button className="w-full mt-4">
-                <Download className="h-4 w-4 mr-2" />
-                Download Word Document
-              </Button>
+              <div className="flex gap-3 mt-4">
+                <Button variant="outline" onClick={handleReset} className="flex-1">
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Reset
+                </Button>
+                <Button className="flex-[2]">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
             </div>
           </div>
 

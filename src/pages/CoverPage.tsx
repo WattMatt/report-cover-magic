@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Download } from "lucide-react";
+import { Download, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CoverPagePreview from "@/components/CoverPagePreview";
 import CoverPageForm from "@/components/CoverPageForm";
@@ -9,19 +9,43 @@ import { toast } from "sonner";
 import { useTheme } from "@/contexts/ThemeContext";
 import wmLogo from "@/assets/wm-logo.jpg";
 
+const DEFAULTS = {
+  reportTitle: "Electrical Load\nEstimate Report",
+  projectName: "Central Plaza Shopping Centre",
+  projectSubtitle: "Retail Development",
+  projectLocation: "123 Main Street, Sydney NSW 2000",
+  clientName: "ABC Developments Pty Ltd",
+  documentNumber: "ELE-RPT-001",
+  revision: "Rev A",
+  preparedBy: "WM Engineering",
+};
+
 const CoverPage = () => {
   const { primaryLineColor, accentLineColor, customLogo } = useTheme();
   
-  const [reportTitle, setReportTitle] = useState("Electrical Load\nEstimate Report");
-  const [projectName, setProjectName] = useState("Central Plaza Shopping Centre");
-  const [projectSubtitle, setProjectSubtitle] = useState("Retail Development");
-  const [projectLocation, setProjectLocation] = useState("123 Main Street, Sydney NSW 2000");
-  const [clientName, setClientName] = useState("ABC Developments Pty Ltd");
-  const [documentNumber, setDocumentNumber] = useState("ELE-RPT-001");
-  const [revision, setRevision] = useState("Rev A");
-  const [preparedBy, setPreparedBy] = useState("WM Engineering");
+  const [reportTitle, setReportTitle] = useState(DEFAULTS.reportTitle);
+  const [projectName, setProjectName] = useState(DEFAULTS.projectName);
+  const [projectSubtitle, setProjectSubtitle] = useState(DEFAULTS.projectSubtitle);
+  const [projectLocation, setProjectLocation] = useState(DEFAULTS.projectLocation);
+  const [clientName, setClientName] = useState(DEFAULTS.clientName);
+  const [documentNumber, setDocumentNumber] = useState(DEFAULTS.documentNumber);
+  const [revision, setRevision] = useState(DEFAULTS.revision);
+  const [preparedBy, setPreparedBy] = useState(DEFAULTS.preparedBy);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleReset = () => {
+    setReportTitle(DEFAULTS.reportTitle);
+    setProjectName(DEFAULTS.projectName);
+    setProjectSubtitle(DEFAULTS.projectSubtitle);
+    setProjectLocation(DEFAULTS.projectLocation);
+    setClientName(DEFAULTS.clientName);
+    setDocumentNumber(DEFAULTS.documentNumber);
+    setRevision(DEFAULTS.revision);
+    setPreparedBy(DEFAULTS.preparedBy);
+    setDate(new Date().toISOString().split("T")[0]);
+    toast.success("Form reset to defaults");
+  };
 
   const handleDownload = async () => {
     setIsGenerating(true);
@@ -111,11 +135,20 @@ const CoverPage = () => {
                 setDate={setDate}
               />
 
-              <Button
-                onClick={handleDownload}
-                disabled={isGenerating}
-                className="w-full mt-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
-              >
+              <div className="flex gap-3 mt-6">
+                <Button
+                  onClick={handleReset}
+                  variant="outline"
+                  className="flex-1 py-6"
+                >
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Reset
+                </Button>
+                <Button
+                  onClick={handleDownload}
+                  disabled={isGenerating}
+                  className="flex-[2] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
+                >
                 {isGenerating ? (
                   <>
                     <motion.div
@@ -134,6 +167,7 @@ const CoverPage = () => {
                   </>
                 )}
               </Button>
+              </div>
             </div>
           </motion.div>
 
