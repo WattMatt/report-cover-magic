@@ -7,12 +7,18 @@ import { Label } from "@/components/ui/label";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { generateDocumentHistory } from "@/utils/generateDocumentHistory";
+import PageTemplateManager from "@/components/PageTemplateManager";
 
 interface RevisionEntry {
   revision: string;
   date: string;
   author: string;
   description: string;
+}
+
+interface DocumentHistoryTemplateData {
+  title: string;
+  revisions: RevisionEntry[];
 }
 
 const DEFAULT_REVISIONS: RevisionEntry[] = [
@@ -61,19 +67,36 @@ const DocumentHistoryPage = () => {
     }
   };
 
+  const getCurrentData = (): DocumentHistoryTemplateData => ({
+    title,
+    revisions,
+  });
+
+  const handleLoadTemplate = (data: DocumentHistoryTemplateData) => {
+    setTitle(data.title);
+    setRevisions(data.revisions);
+  };
+
   return (
     <div className="flex-1 p-8">
       <div className="max-w-6xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-10">
           {/* Form */}
           <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">
-                Document History
-              </h2>
-              <p className="text-muted-foreground">
-                Track revisions with dates and authors.
-              </p>
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground mb-2">
+                  Document History
+                </h2>
+                <p className="text-muted-foreground">
+                  Track revisions with dates and authors.
+                </p>
+              </div>
+              <PageTemplateManager<DocumentHistoryTemplateData>
+                pageType="document_history"
+                currentData={getCurrentData()}
+                onLoadTemplate={handleLoadTemplate}
+              />
             </div>
 
             <div className="bg-card rounded-xl p-6 shadow-lg border border-border space-y-4">
