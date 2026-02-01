@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, Reorder } from "framer-motion";
-import { Download, Trash2, GripVertical, FileText, BookOpen, FileSpreadsheet, Layers, History, Save, FolderOpen, Loader2 } from "lucide-react";
+import { Download, Trash2, GripVertical, FileText, BookOpen, FileSpreadsheet, Layers, History, Save, FolderOpen, Loader2, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -135,6 +135,23 @@ const MultiPageBuilderPage = () => {
   const removePage = (id: string) => {
     setPages(pages.filter((p) => p.id !== id));
     toast.success("Page removed");
+  };
+
+  const duplicatePage = (id: string) => {
+    const pageIndex = pages.findIndex((p) => p.id === id);
+    if (pageIndex === -1) return;
+    
+    const originalPage = pages[pageIndex];
+    const duplicatedPage: PageItem = {
+      id: crypto.randomUUID(),
+      config: JSON.parse(JSON.stringify(originalPage.config)), // Deep clone the config
+    };
+    
+    // Insert the duplicate right after the original
+    const newPages = [...pages];
+    newPages.splice(pageIndex + 1, 0, duplicatedPage);
+    setPages(newPages);
+    toast.success(`Duplicated ${PAGE_TYPE_INFO[originalPage.config.type].label}`);
   };
 
   const updatePage = (id: string, config: PageConfig) => {
@@ -586,9 +603,22 @@ const MultiPageBuilderPage = () => {
                                 size="icon"
                                 onClick={(e) => {
                                   e.stopPropagation();
+                                  duplicatePage(item.id);
+                                }}
+                                className="text-muted-foreground hover:text-foreground"
+                                title="Duplicate page"
+                              >
+                                <Copy className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   removePage(item.id);
                                 }}
                                 className="text-destructive hover:text-destructive"
+                                title="Remove page"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
