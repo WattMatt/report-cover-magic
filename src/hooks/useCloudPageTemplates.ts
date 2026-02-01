@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Json } from "@/integrations/supabase/types";
 
-export type PageType = "toc" | "executive_summary" | "section_divider" | "document_history";
+export type PageType = "toc" | "executive_summary" | "section_divider" | "document_history" | "bar_line_chart" | "pie_chart" | "data_table" | "comparison_table" | "summary_table";
 
 export interface PageTemplate<T = unknown> {
   id: string;
