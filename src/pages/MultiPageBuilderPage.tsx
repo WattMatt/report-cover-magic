@@ -642,6 +642,7 @@ const MultiPageBuilderPage = () => {
               pages={pages}
               primaryLineColor={primaryLineColor}
               accentLineColor={accentLineColor}
+              onReorder={setPages}
             />
           )}
         </div>
