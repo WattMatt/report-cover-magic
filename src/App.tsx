@@ -10,6 +10,7 @@ import TableOfContentsPage from "./pages/TableOfContentsPage";
 import ExecutiveSummaryPage from "./pages/ExecutiveSummaryPage";
 import SectionDividerPage from "./pages/SectionDividerPage";
 import DocumentHistoryPage from "./pages/DocumentHistoryPage";
+import MultiPageBuilderPage from "./pages/MultiPageBuilderPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
               <Route path="/executive-summary" element={<ExecutiveSummaryPage />} />
               <Route path="/section-divider" element={<SectionDividerPage />} />
               <Route path="/document-history" element={<DocumentHistoryPage />} />
+              <Route path="/multi-page-builder" element={<MultiPageBuilderPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
