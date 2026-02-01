@@ -9,6 +9,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { generateExecutiveSummary } from "@/utils/generateExecutiveSummary";
 import PageTemplateManager from "@/components/PageTemplateManager";
+import { PageTemplate } from "@/hooks/useCloudPageTemplates";
 
 interface Highlight {
   label: string;
@@ -46,6 +47,7 @@ const ExecutiveSummaryPage = () => {
   const [projectName, setProjectName] = useState(DEFAULTS.projectName);
   const [summaryText, setSummaryText] = useState(DEFAULTS.summaryText);
   const [highlights, setHighlights] = useState<Highlight[]>([...DEFAULTS.highlights]);
+  const [selectedTemplate, setSelectedTemplate] = useState<PageTemplate<ExecutiveSummaryTemplateData> | null>(null);
 
   const updateHighlight = (index: number, field: "label" | "value", value: string) => {
     const newHighlights = [...highlights];
@@ -111,6 +113,8 @@ const ExecutiveSummaryPage = () => {
                 pageType="executive_summary"
                 currentData={getCurrentData()}
                 onLoadTemplate={handleLoadTemplate}
+                selectedTemplate={selectedTemplate}
+                onSelectTemplate={setSelectedTemplate}
               />
             </div>
 

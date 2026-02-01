@@ -8,6 +8,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { generateSectionDivider } from "@/utils/generateSectionDivider";
 import PageTemplateManager from "@/components/PageTemplateManager";
+import { PageTemplate } from "@/hooks/useCloudPageTemplates";
 
 interface SectionDividerTemplateData {
   sectionNumber: string;
@@ -26,6 +27,7 @@ const SectionDividerPage = () => {
   const [sectionNumber, setSectionNumber] = useState(DEFAULTS.sectionNumber);
   const [sectionTitle, setSectionTitle] = useState(DEFAULTS.sectionTitle);
   const [sectionSubtitle, setSectionSubtitle] = useState(DEFAULTS.sectionSubtitle);
+  const [selectedTemplate, setSelectedTemplate] = useState<PageTemplate<SectionDividerTemplateData> | null>(null);
 
   const handleReset = () => {
     setSectionNumber(DEFAULTS.sectionNumber);
@@ -81,6 +83,8 @@ const SectionDividerPage = () => {
                 pageType="section_divider"
                 currentData={getCurrentData()}
                 onLoadTemplate={handleLoadTemplate}
+                selectedTemplate={selectedTemplate}
+                onSelectTemplate={setSelectedTemplate}
               />
             </div>
 

@@ -115,11 +115,39 @@ export const useCloudPageTemplates = <T>(pageType: PageType) => {
     await fetchTemplates();
   };
 
+  const updateTemplate = async (
+    id: string,
+    name: string,
+    data: T,
+    primaryLineColor: string,
+    accentLineColor: string
+  ) => {
+    const { error } = await supabase
+      .from('page_templates')
+      .update({
+        name,
+        data: data as unknown as Json,
+        primary_line_color: primaryLineColor,
+        accent_line_color: accentLineColor,
+      })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating template:', error);
+      toast.error('Failed to update template');
+      return;
+    }
+
+    toast.success(`Template "${name}" updated!`);
+    await fetchTemplates();
+  };
+
   return {
     templates,
     loading,
     saveTemplate,
     deleteTemplate,
+    updateTemplate,
     refetch: fetchTemplates,
   };
 };
