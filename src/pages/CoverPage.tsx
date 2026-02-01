@@ -8,7 +8,7 @@ import TemplateManager from "@/components/TemplateManager";
 import { generateWordDocument } from "@/utils/generateWordDocument";
 import { toast } from "sonner";
 import { useTheme } from "@/contexts/ThemeContext";
-import { CoverPageTemplate } from "@/hooks/useTemplates";
+import { CoverPageTemplateData } from "@/hooks/useCloudTemplates";
 import wmLogo from "@/assets/wm-logo.jpg";
 
 const DEFAULTS = {
@@ -49,7 +49,7 @@ const CoverPage = () => {
     toast.success("Form reset to defaults");
   };
 
-  const getCurrentTemplateData = (): CoverPageTemplate["data"] => ({
+  const getCurrentTemplateData = (): CoverPageTemplateData => ({
     reportTitle,
     projectName,
     projectSubtitle,
@@ -62,7 +62,7 @@ const CoverPage = () => {
     accentLineColor,
   });
 
-  const handleLoadTemplate = (data: CoverPageTemplate["data"]) => {
+  const handleLoadTemplate = (data: CoverPageTemplateData) => {
     setReportTitle(data.reportTitle);
     setProjectName(data.projectName);
     setProjectSubtitle(data.projectSubtitle);
