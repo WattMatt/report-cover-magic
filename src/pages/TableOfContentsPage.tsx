@@ -7,10 +7,16 @@ import { Label } from "@/components/ui/label";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { generateTableOfContents } from "@/utils/generateTableOfContents";
+import PageTemplateManager from "@/components/PageTemplateManager";
 
 interface TOCEntry {
   title: string;
   page: string;
+}
+
+interface TOCTemplateData {
+  documentTitle: string;
+  entries: TOCEntry[];
 }
 
 const DEFAULT_ENTRIES: TOCEntry[] = [
@@ -65,19 +71,36 @@ const TableOfContentsPage = () => {
     }
   };
 
+  const getCurrentData = (): TOCTemplateData => ({
+    documentTitle,
+    entries,
+  });
+
+  const handleLoadTemplate = (data: TOCTemplateData) => {
+    setDocumentTitle(data.documentTitle);
+    setEntries(data.entries);
+  };
+
   return (
     <div className="flex-1 p-8">
       <div className="max-w-6xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-10">
           {/* Form */}
           <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">
-                Table of Contents
-              </h2>
-              <p className="text-muted-foreground">
-                Add and organize your document sections.
-              </p>
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground mb-2">
+                  Table of Contents
+                </h2>
+                <p className="text-muted-foreground">
+                  Add and organize your document sections.
+                </p>
+              </div>
+              <PageTemplateManager<TOCTemplateData>
+                pageType="toc"
+                currentData={getCurrentData()}
+                onLoadTemplate={handleLoadTemplate}
+              />
             </div>
 
             <div className="bg-card rounded-xl p-6 shadow-lg border border-border space-y-4">

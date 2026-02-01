@@ -8,6 +8,19 @@ import { Label } from "@/components/ui/label";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { generateExecutiveSummary } from "@/utils/generateExecutiveSummary";
+import PageTemplateManager from "@/components/PageTemplateManager";
+
+interface Highlight {
+  label: string;
+  value: string;
+}
+
+interface ExecutiveSummaryTemplateData {
+  title: string;
+  projectName: string;
+  summaryText: string;
+  highlights: Highlight[];
+}
 
 const DEFAULTS = {
   title: "Executive Summary",
@@ -32,7 +45,7 @@ const ExecutiveSummaryPage = () => {
   const [title, setTitle] = useState(DEFAULTS.title);
   const [projectName, setProjectName] = useState(DEFAULTS.projectName);
   const [summaryText, setSummaryText] = useState(DEFAULTS.summaryText);
-  const [highlights, setHighlights] = useState([...DEFAULTS.highlights]);
+  const [highlights, setHighlights] = useState<Highlight[]>([...DEFAULTS.highlights]);
 
   const updateHighlight = (index: number, field: "label" | "value", value: string) => {
     const newHighlights = [...highlights];
@@ -65,19 +78,40 @@ const ExecutiveSummaryPage = () => {
     }
   };
 
+  const getCurrentData = (): ExecutiveSummaryTemplateData => ({
+    title,
+    projectName,
+    summaryText,
+    highlights,
+  });
+
+  const handleLoadTemplate = (data: ExecutiveSummaryTemplateData) => {
+    setTitle(data.title);
+    setProjectName(data.projectName);
+    setSummaryText(data.summaryText);
+    setHighlights(data.highlights);
+  };
+
   return (
     <div className="flex-1 p-8">
       <div className="max-w-6xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-10">
           {/* Form */}
           <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">
-                Executive Summary
-              </h2>
-              <p className="text-muted-foreground">
-                Create a professional summary page for your report.
-              </p>
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground mb-2">
+                  Executive Summary
+                </h2>
+                <p className="text-muted-foreground">
+                  Create a professional summary page for your report.
+                </p>
+              </div>
+              <PageTemplateManager<ExecutiveSummaryTemplateData>
+                pageType="executive_summary"
+                currentData={getCurrentData()}
+                onLoadTemplate={handleLoadTemplate}
+              />
             </div>
 
             <div className="bg-card rounded-xl p-6 shadow-lg border border-border space-y-4">

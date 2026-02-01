@@ -41,6 +41,42 @@ export type Database = {
         }
         Relationships: []
       }
+      page_templates: {
+        Row: {
+          accent_line_color: string
+          created_at: string
+          data: Json
+          id: string
+          name: string
+          page_type: string
+          primary_line_color: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accent_line_color?: string
+          created_at?: string
+          data: Json
+          id?: string
+          name: string
+          page_type: string
+          primary_line_color?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accent_line_color?: string
+          created_at?: string
+          data?: Json
+          id?: string
+          name?: string
+          page_type?: string
+          primary_line_color?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

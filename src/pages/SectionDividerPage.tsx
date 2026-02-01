@@ -7,6 +7,13 @@ import { Label } from "@/components/ui/label";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { generateSectionDivider } from "@/utils/generateSectionDivider";
+import PageTemplateManager from "@/components/PageTemplateManager";
+
+interface SectionDividerTemplateData {
+  sectionNumber: string;
+  sectionTitle: string;
+  sectionSubtitle: string;
+}
 
 const DEFAULTS = {
   sectionNumber: "Section 1",
@@ -43,19 +50,38 @@ const SectionDividerPage = () => {
     }
   };
 
+  const getCurrentData = (): SectionDividerTemplateData => ({
+    sectionNumber,
+    sectionTitle,
+    sectionSubtitle,
+  });
+
+  const handleLoadTemplate = (data: SectionDividerTemplateData) => {
+    setSectionNumber(data.sectionNumber);
+    setSectionTitle(data.sectionTitle);
+    setSectionSubtitle(data.sectionSubtitle);
+  };
+
   return (
     <div className="flex-1 p-8">
       <div className="max-w-6xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-10">
           {/* Form */}
           <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">
-                Section Divider
-              </h2>
-              <p className="text-muted-foreground">
-                Create full-page section headers for your report.
-              </p>
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground mb-2">
+                  Section Divider
+                </h2>
+                <p className="text-muted-foreground">
+                  Create full-page section headers for your report.
+                </p>
+              </div>
+              <PageTemplateManager<SectionDividerTemplateData>
+                pageType="section_divider"
+                currentData={getCurrentData()}
+                onLoadTemplate={handleLoadTemplate}
+              />
             </div>
 
             <div className="bg-card rounded-xl p-6 shadow-lg border border-border space-y-4">
