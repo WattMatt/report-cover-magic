@@ -32,12 +32,26 @@ interface CoverPageData {
   accentLineColor: string;
 }
 
+// Helper function to convert base64 to Uint8Array (browser-compatible)
+const base64ToUint8Array = (base64: string): Uint8Array => {
+  const binaryString = atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+};
+
 export const generateWordDocument = async (
   data: CoverPageData,
   logoBase64: string
 ) => {
   // Strip the data URL prefix if present
   const base64Data = logoBase64.replace(/^data:image\/\w+;base64,/, "");
+  
+  // Convert base64 to Uint8Array for browser compatibility
+  const imageData = base64ToUint8Array(base64Data);
   
   // Convert hex colors to docx format (remove # prefix)
   const primaryColor = data.primaryLineColor.replace("#", "");
@@ -83,7 +97,7 @@ export const generateWordDocument = async (
             spacing: { after: 400 },
             children: [
               new ImageRun({
-                data: Buffer.from(base64Data, "base64"),
+                data: imageData,
                 transformation: {
                   width: 180,
                   height: 80,
