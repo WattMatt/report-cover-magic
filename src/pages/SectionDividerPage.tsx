@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { generateSectionDivider } from "@/utils/generateSectionDivider";
 import PageTemplateManager from "@/components/PageTemplateManager";
 import { PageTemplate } from "@/hooks/useCloudPageTemplates";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 interface SectionDividerTemplateData {
   sectionNumber: string;
@@ -63,6 +64,11 @@ const SectionDividerPage = () => {
     setSectionTitle(data.sectionTitle);
     setSectionSubtitle(data.sectionSubtitle);
   };
+
+  useKeyboardShortcuts({
+    onReset: handleReset,
+    onDownload: handleDownload,
+  });
 
   return (
     <div className="flex-1 p-8">

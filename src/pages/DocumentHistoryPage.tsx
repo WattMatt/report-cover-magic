@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { generateDocumentHistory } from "@/utils/generateDocumentHistory";
 import PageTemplateManager from "@/components/PageTemplateManager";
 import { PageTemplate } from "@/hooks/useCloudPageTemplates";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 interface RevisionEntry {
   revision: string;
@@ -78,6 +79,11 @@ const DocumentHistoryPage = () => {
     setTitle(data.title);
     setRevisions(data.revisions);
   };
+
+  useKeyboardShortcuts({
+    onReset: handleReset,
+    onDownload: handleDownload,
+  });
 
   return (
     <div className="flex-1 p-8">

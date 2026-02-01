@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 interface DataPoint {
   label: string;
@@ -59,6 +60,11 @@ const BarLineChartPage = () => {
   const handleDownload = () => {
     toast.success("Chart page downloaded!");
   };
+
+  useKeyboardShortcuts({
+    onReset: handleReset,
+    onDownload: handleDownload,
+  });
 
   return (
     <div className="min-h-screen bg-background p-6">

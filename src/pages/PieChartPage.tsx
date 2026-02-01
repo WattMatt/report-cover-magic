@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 interface DataSlice {
   name: string;
@@ -58,6 +59,11 @@ const PieChartPage = () => {
   const handleDownload = () => {
     toast.success("Chart page downloaded!");
   };
+
+  useKeyboardShortcuts({
+    onReset: handleReset,
+    onDownload: handleDownload,
+  });
 
   const total = dataSlices.reduce((sum, slice) => sum + slice.value, 0);
 

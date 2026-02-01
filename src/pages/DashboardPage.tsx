@@ -10,6 +10,7 @@ import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 const DEFAULT_BAR_DATA = [
   { name: "Q1", value: 4000 },
@@ -56,6 +57,11 @@ const DashboardPage = () => {
   const handleDownload = () => {
     toast.success("Dashboard page downloaded!");
   };
+
+  useKeyboardShortcuts({
+    onReset: handleReset,
+    onDownload: handleDownload,
+  });
 
   return (
     <div className="min-h-screen bg-background p-6">

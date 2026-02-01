@@ -9,6 +9,7 @@ import { generateWordDocument } from "@/utils/generateWordDocument";
 import { toast } from "sonner";
 import { useTheme } from "@/contexts/ThemeContext";
 import { CoverPageTemplateData, CoverPageTemplate } from "@/hooks/useCloudTemplates";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import wmLogo from "@/assets/wm-logo.jpg";
 
 const DEFAULTS = {
@@ -121,6 +122,11 @@ const CoverPage = () => {
     }
   };
 
+  useKeyboardShortcuts({
+    onReset: handleReset,
+    onDownload: handleDownload,
+  });
+
   return (
     <div className="flex-1 p-8">
       <div className="max-w-6xl mx-auto">
@@ -177,6 +183,7 @@ const CoverPage = () => {
                   onClick={handleReset}
                   variant="outline"
                   className="flex-1 py-6"
+                  title="Reset form (Ctrl+R)"
                 >
                   <RotateCcw className="h-4 w-4 mr-2" />
                   Reset
@@ -185,6 +192,7 @@ const CoverPage = () => {
                   onClick={handleDownload}
                   disabled={isGenerating}
                   className="flex-[2] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
+                  title="Download document (Ctrl+D)"
                 >
                 {isGenerating ? (
                   <>
