@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { generateDashboardDocument } from "@/utils/generateDashboardDocument";
 
 const DEFAULT_BAR_DATA = [
   { name: "Q1", value: 4000 },
@@ -71,8 +72,28 @@ const DashboardPage = () => {
     toast.success("Reset to defaults");
   };
 
-  const handleDownload = () => {
-    toast.success("Dashboard page downloaded!");
+  const handleDownload = async () => {
+    try {
+      await generateDashboardDocument({
+        dashboardTitle,
+        barChartTitle,
+        lineChartTitle,
+        pieChartTitle,
+        tableTitle,
+        metricValue,
+        metricLabel,
+        barData: DEFAULT_BAR_DATA,
+        lineData: DEFAULT_LINE_DATA,
+        pieData: DEFAULT_PIE_DATA,
+        tableData: DEFAULT_TABLE_DATA,
+        primaryLineColor,
+        accentLineColor,
+      });
+      toast.success("Dashboard document downloaded!");
+    } catch (error) {
+      console.error("Error generating document:", error);
+      toast.error("Failed to generate document");
+    }
   };
 
   useKeyboardShortcuts({
