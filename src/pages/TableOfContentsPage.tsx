@@ -8,6 +8,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { generateTableOfContents } from "@/utils/generateTableOfContents";
 import PageTemplateManager from "@/components/PageTemplateManager";
+import { PageTemplate } from "@/hooks/useCloudPageTemplates";
 
 interface TOCEntry {
   title: string;
@@ -35,6 +36,7 @@ const TableOfContentsPage = () => {
   const { primaryLineColor, accentLineColor } = useTheme();
   const [documentTitle, setDocumentTitle] = useState("Table of Contents");
   const [entries, setEntries] = useState<TOCEntry[]>(DEFAULT_ENTRIES);
+  const [selectedTemplate, setSelectedTemplate] = useState<PageTemplate<TOCTemplateData> | null>(null);
 
   const updateEntry = (index: number, field: keyof TOCEntry, value: string) => {
     const newEntries = [...entries];
@@ -100,6 +102,8 @@ const TableOfContentsPage = () => {
                 pageType="toc"
                 currentData={getCurrentData()}
                 onLoadTemplate={handleLoadTemplate}
+                selectedTemplate={selectedTemplate}
+                onSelectTemplate={setSelectedTemplate}
               />
             </div>
 

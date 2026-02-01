@@ -8,7 +8,7 @@ import TemplateManager from "@/components/TemplateManager";
 import { generateWordDocument } from "@/utils/generateWordDocument";
 import { toast } from "sonner";
 import { useTheme } from "@/contexts/ThemeContext";
-import { CoverPageTemplateData } from "@/hooks/useCloudTemplates";
+import { CoverPageTemplateData, CoverPageTemplate } from "@/hooks/useCloudTemplates";
 import wmLogo from "@/assets/wm-logo.jpg";
 
 const DEFAULTS = {
@@ -35,6 +35,7 @@ const CoverPage = () => {
   const [preparedBy, setPreparedBy] = useState(DEFAULTS.preparedBy);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<CoverPageTemplate | null>(null);
 
   const handleReset = () => {
     setReportTitle(DEFAULTS.reportTitle);
@@ -145,6 +146,8 @@ const CoverPage = () => {
             <TemplateManager
               currentData={getCurrentTemplateData()}
               onLoadTemplate={handleLoadTemplate}
+              selectedTemplate={selectedTemplate}
+              onSelectTemplate={setSelectedTemplate}
             />
 
             <div className="bg-card rounded-xl p-6 shadow-lg border border-border">

@@ -8,6 +8,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { generateDocumentHistory } from "@/utils/generateDocumentHistory";
 import PageTemplateManager from "@/components/PageTemplateManager";
+import { PageTemplate } from "@/hooks/useCloudPageTemplates";
 
 interface RevisionEntry {
   revision: string;
@@ -31,6 +32,7 @@ const DocumentHistoryPage = () => {
   const { primaryLineColor, accentLineColor } = useTheme();
   const [title, setTitle] = useState("Document Revision History");
   const [revisions, setRevisions] = useState<RevisionEntry[]>([...DEFAULT_REVISIONS]);
+  const [selectedTemplate, setSelectedTemplate] = useState<PageTemplate<DocumentHistoryTemplateData> | null>(null);
 
   const updateRevision = (index: number, field: keyof RevisionEntry, value: string) => {
     const newRevisions = [...revisions];
@@ -96,6 +98,8 @@ const DocumentHistoryPage = () => {
                 pageType="document_history"
                 currentData={getCurrentData()}
                 onLoadTemplate={handleLoadTemplate}
+                selectedTemplate={selectedTemplate}
+                onSelectTemplate={setSelectedTemplate}
               />
             </div>
 
