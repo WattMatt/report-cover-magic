@@ -112,6 +112,40 @@ const AuthPage = () => {
     }
   };
 
+  // Show full-page overlay during OAuth redirect
+  if (isGoogleLoading || isAppleLoading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background"
+      >
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-16 w-16 rounded-full border-4 border-primary/20" />
+          </div>
+          <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        </div>
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mt-6 text-lg font-medium text-foreground"
+        >
+          {isGoogleLoading ? "Connecting to Google..." : "Connecting to Apple..."}
+        </motion.p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-2 text-sm text-muted-foreground"
+        >
+          You'll be redirected shortly
+        </motion.p>
+      </motion.div>
+    );
+  }
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
