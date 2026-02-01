@@ -21,6 +21,7 @@ import { Packer } from "docx";
 interface CoverPageData {
   reportTitle: string;
   projectName: string;
+  projectSubtitle: string;
   projectLocation: string;
   clientName: string;
   documentNumber: string;
@@ -136,20 +137,20 @@ export const generateWordDocument = async (
             ],
           }),
 
-          // Project Type
-          new Paragraph({
+          // Project Type (Subtitle)
+          ...(data.projectSubtitle ? [new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { after: 200 },
             children: [
               new TextRun({
-                text: "RETAIL DEVELOPMENT",
+                text: data.projectSubtitle.toUpperCase(),
                 size: 32,
                 color: primaryColor,
                 font: "Arial",
                 italics: true,
               }),
             ],
-          }),
+          })] : []),
 
           // Location
           new Paragraph({
