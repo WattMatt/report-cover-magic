@@ -21,6 +21,17 @@ import {
 import { saveAs } from "file-saver";
 import { Packer } from "docx";
 
+// Helper function to convert base64 to Uint8Array (browser-compatible)
+const base64ToUint8Array = (base64: string): Uint8Array => {
+  const binaryString = atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+};
+
 // Page type definitions
 export type PageType = "cover" | "toc" | "executive" | "section" | "history";
 
@@ -85,13 +96,14 @@ function generateCoverSection(
   // Logo
   if (logoBase64) {
     const base64Data = logoBase64.replace(/^data:image\/\w+;base64,/, "");
+    const imageData = base64ToUint8Array(base64Data);
     children.push(
       new Paragraph({
         alignment: AlignmentType.CENTER,
         spacing: { after: 400 },
         children: [
           new ImageRun({
-            data: Buffer.from(base64Data, "base64"),
+            data: imageData,
             transformation: { width: 180, height: 80 },
             type: "jpg",
           }),
