@@ -1,4 +1,4 @@
-import { FileText, BookOpen, Layers, History, FileSpreadsheet, Files } from "lucide-react";
+import { FileText, BookOpen, Layers, History, FileSpreadsheet, Files, BarChart3, PieChart, LayoutDashboard, Table, GitCompare, ClipboardList } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import ThemeSelector from "./ThemeSelector";
@@ -20,6 +20,18 @@ const pageTypes = [
   { title: "Executive Summary", url: "/executive-summary", icon: FileSpreadsheet },
   { title: "Section Divider", url: "/section-divider", icon: Layers },
   { title: "Document History", url: "/document-history", icon: History },
+];
+
+const chartPages = [
+  { title: "Bar/Line Chart", url: "/bar-line-chart", icon: BarChart3 },
+  { title: "Pie/Donut Chart", url: "/pie-chart", icon: PieChart },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+];
+
+const tablePages = [
+  { title: "Data Table", url: "/data-table", icon: Table },
+  { title: "Comparison Table", url: "/comparison-table", icon: GitCompare },
+  { title: "Summary Table", url: "/summary-table", icon: ClipboardList },
 ];
 
 const builderItems = [
@@ -47,6 +59,58 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end
+                      className="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-muted/50 transition-colors"
+                      activeClassName="bg-primary/10 text-primary font-medium"
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator />
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground px-4 py-2">
+            Charts
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {chartPages.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.url}
+                      className="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-muted/50 transition-colors"
+                      activeClassName="bg-primary/10 text-primary font-medium"
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator />
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground px-4 py-2">
+            Tables
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {tablePages.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.url}
                       className="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-muted/50 transition-colors"
                       activeClassName="bg-primary/10 text-primary font-medium"
                     >
