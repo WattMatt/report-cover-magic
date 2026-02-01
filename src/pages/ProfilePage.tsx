@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Save, User, Upload, X } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Profile {
   id: string;
@@ -178,8 +179,37 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="container max-w-2xl py-8">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-5 w-5 rounded" />
+              <Skeleton className="h-6 w-36" />
+            </div>
+            <Skeleton className="h-4 w-56 mt-2" />
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Avatar skeleton */}
+            <div className="flex items-center gap-6">
+              <Skeleton className="h-24 w-24 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-4 w-48" />
+                <Skeleton className="h-9 w-32" />
+                <Skeleton className="h-3 w-40" />
+              </div>
+            </div>
+
+            {/* Display Name skeleton */}
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+
+            {/* Save Button skeleton */}
+            <Skeleton className="h-10 w-full" />
+          </CardContent>
+        </Card>
       </div>
     );
   }
