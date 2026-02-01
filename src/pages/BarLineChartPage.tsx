@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { generateBarLineChartDocument } from "@/utils/generateChartDocument";
+import PageTemplateManager from "@/components/PageTemplateManager";
+import { PageTemplate } from "@/hooks/useCloudPageTemplates";
 
 interface DataPoint {
   label: string;
@@ -25,13 +27,40 @@ const DEFAULT_DATA: DataPoint[] = [
   { label: "Jun", value: 5500 },
 ];
 
+interface BarLineChartTemplateData {
+  chartTitle: string;
+  chartType: "bar" | "line";
+  xAxisLabel: string;
+  yAxisLabel: string;
+  dataPoints: DataPoint[];
+}
+
 const BarLineChartPage = () => {
-  const { primaryLineColor, accentLineColor } = useTheme();
+  const { primaryLineColor, accentLineColor, setPrimaryLineColor, setAccentLineColor } = useTheme();
   const [chartTitle, setChartTitle] = useState("Monthly Performance");
   const [chartType, setChartType] = useState<"bar" | "line">("bar");
   const [xAxisLabel, setXAxisLabel] = useState("Month");
   const [yAxisLabel, setYAxisLabel] = useState("Value");
   const [dataPoints, setDataPoints] = useState<DataPoint[]>([...DEFAULT_DATA]);
+  const [selectedTemplate, setSelectedTemplate] = useState<PageTemplate<BarLineChartTemplateData> | null>(null);
+
+  const getCurrentData = (): BarLineChartTemplateData => ({
+    chartTitle,
+    chartType,
+    xAxisLabel,
+    yAxisLabel,
+    dataPoints,
+  });
+
+  const handleLoadTemplate = (data: BarLineChartTemplateData, primaryColor: string, accentColor: string) => {
+    setChartTitle(data.chartTitle);
+    setChartType(data.chartType);
+    setXAxisLabel(data.xAxisLabel);
+    setYAxisLabel(data.yAxisLabel);
+    setDataPoints(data.dataPoints);
+    setPrimaryLineColor(primaryColor);
+    setAccentLineColor(accentColor);
+  };
 
   const handleDataChange = (index: number, field: keyof DataPoint, value: string | number) => {
     const updated = [...dataPoints];
@@ -55,6 +84,7 @@ const BarLineChartPage = () => {
     setXAxisLabel("Month");
     setYAxisLabel("Value");
     setDataPoints([...DEFAULT_DATA]);
+    setSelectedTemplate(null);
     toast.success("Reset to defaults");
   };
 
@@ -93,7 +123,14 @@ const BarLineChartPage = () => {
             <h1 className="text-3xl font-bold text-foreground">Bar/Line Chart Page</h1>
             <p className="text-muted-foreground mt-1">Create data visualizations for your reports</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 items-start">
+            <PageTemplateManager<BarLineChartTemplateData>
+              pageType="bar_line_chart"
+              currentData={getCurrentData()}
+              onLoadTemplate={handleLoadTemplate}
+              selectedTemplate={selectedTemplate}
+              onSelectTemplate={setSelectedTemplate}
+            />
             <Button variant="outline" onClick={handleReset}>
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset

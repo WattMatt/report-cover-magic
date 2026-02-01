@@ -17,6 +17,8 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { generateComparisonTableDocument } from "@/utils/generateTableDocument";
+import PageTemplateManager from "@/components/PageTemplateManager";
+import { PageTemplate } from "@/hooks/useCloudPageTemplates";
 
 interface FeatureRow {
   id: string;
@@ -33,11 +35,32 @@ const DEFAULT_FEATURES: FeatureRow[] = [
   { id: "5", feature: "Cost Effective", values: ["partial", "yes", "yes"] },
 ];
 
+interface ComparisonTableTemplateData {
+  tableTitle: string;
+  options: string[];
+  features: FeatureRow[];
+}
+
 const ComparisonTablePage = () => {
-  const { primaryLineColor, accentLineColor } = useTheme();
+  const { primaryLineColor, accentLineColor, setPrimaryLineColor, setAccentLineColor } = useTheme();
   const [tableTitle, setTableTitle] = useState("Feature Comparison");
   const [options, setOptions] = useState<string[]>([...DEFAULT_OPTIONS]);
   const [features, setFeatures] = useState<FeatureRow[]>([...DEFAULT_FEATURES]);
+  const [selectedTemplate, setSelectedTemplate] = useState<PageTemplate<ComparisonTableTemplateData> | null>(null);
+
+  const getCurrentData = (): ComparisonTableTemplateData => ({
+    tableTitle,
+    options,
+    features,
+  });
+
+  const handleLoadTemplate = (data: ComparisonTableTemplateData, primaryColor: string, accentColor: string) => {
+    setTableTitle(data.tableTitle);
+    setOptions(data.options);
+    setFeatures(data.features);
+    setPrimaryLineColor(primaryColor);
+    setAccentLineColor(accentColor);
+  };
 
   const handleOptionChange = (index: number, value: string) => {
     const updated = [...options];
@@ -83,6 +106,7 @@ const ComparisonTablePage = () => {
     setTableTitle("Feature Comparison");
     setOptions([...DEFAULT_OPTIONS]);
     setFeatures([...DEFAULT_FEATURES]);
+    setSelectedTemplate(null);
     toast.success("Reset to defaults");
   };
 
@@ -126,7 +150,14 @@ const ComparisonTablePage = () => {
             <h1 className="text-3xl font-bold text-foreground">Comparison Table</h1>
             <p className="text-muted-foreground mt-1">Compare features across multiple options</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 items-start">
+            <PageTemplateManager<ComparisonTableTemplateData>
+              pageType="comparison_table"
+              currentData={getCurrentData()}
+              onLoadTemplate={handleLoadTemplate}
+              selectedTemplate={selectedTemplate}
+              onSelectTemplate={setSelectedTemplate}
+            />
             <Button variant="outline" onClick={handleReset}>
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset

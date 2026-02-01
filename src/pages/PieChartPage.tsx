@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { generatePieChartDocument } from "@/utils/generateChartDocument";
+import PageTemplateManager from "@/components/PageTemplateManager";
+import { PageTemplate } from "@/hooks/useCloudPageTemplates";
 
 interface DataSlice {
   name: string;
@@ -27,11 +29,32 @@ const DEFAULT_DATA: DataSlice[] = [
   { name: "Other", value: 10, color: COLORS[4] },
 ];
 
+interface PieChartTemplateData {
+  chartTitle: string;
+  chartType: "pie" | "donut";
+  dataSlices: DataSlice[];
+}
+
 const PieChartPage = () => {
-  const { primaryLineColor, accentLineColor } = useTheme();
+  const { primaryLineColor, accentLineColor, setPrimaryLineColor, setAccentLineColor } = useTheme();
   const [chartTitle, setChartTitle] = useState("Load Distribution");
   const [chartType, setChartType] = useState<"pie" | "donut">("pie");
   const [dataSlices, setDataSlices] = useState<DataSlice[]>([...DEFAULT_DATA]);
+  const [selectedTemplate, setSelectedTemplate] = useState<PageTemplate<PieChartTemplateData> | null>(null);
+
+  const getCurrentData = (): PieChartTemplateData => ({
+    chartTitle,
+    chartType,
+    dataSlices,
+  });
+
+  const handleLoadTemplate = (data: PieChartTemplateData, primaryColor: string, accentColor: string) => {
+    setChartTitle(data.chartTitle);
+    setChartType(data.chartType);
+    setDataSlices(data.dataSlices);
+    setPrimaryLineColor(primaryColor);
+    setAccentLineColor(accentColor);
+  };
 
   const handleDataChange = (index: number, field: keyof DataSlice, value: string | number) => {
     const updated = [...dataSlices];
@@ -54,6 +77,7 @@ const PieChartPage = () => {
     setChartTitle("Load Distribution");
     setChartType("pie");
     setDataSlices([...DEFAULT_DATA]);
+    setSelectedTemplate(null);
     toast.success("Reset to defaults");
   };
 
@@ -92,7 +116,14 @@ const PieChartPage = () => {
             <h1 className="text-3xl font-bold text-foreground">Pie/Donut Chart Page</h1>
             <p className="text-muted-foreground mt-1">Create distribution charts for your reports</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 items-start">
+            <PageTemplateManager<PieChartTemplateData>
+              pageType="pie_chart"
+              currentData={getCurrentData()}
+              onLoadTemplate={handleLoadTemplate}
+              selectedTemplate={selectedTemplate}
+              onSelectTemplate={setSelectedTemplate}
+            />
             <Button variant="outline" onClick={handleReset}>
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset

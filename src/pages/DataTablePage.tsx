@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/table";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { generateDataTableDocument } from "@/utils/generateTableDocument";
+import PageTemplateManager from "@/components/PageTemplateManager";
+import { PageTemplate } from "@/hooks/useCloudPageTemplates";
 
 interface TableRowData {
   id: string;
@@ -31,11 +33,32 @@ const DEFAULT_ROWS: TableRowData[] = [
   { id: "5", values: ["Wire", "12 AWG THHN", "2000", "LF", "Branch circuit wiring"] },
 ];
 
+interface DataTableTemplateData {
+  tableTitle: string;
+  headers: string[];
+  rows: TableRowData[];
+}
+
 const DataTablePage = () => {
-  const { primaryLineColor, accentLineColor } = useTheme();
+  const { primaryLineColor, accentLineColor, setPrimaryLineColor, setAccentLineColor } = useTheme();
   const [tableTitle, setTableTitle] = useState("Equipment Schedule");
   const [headers, setHeaders] = useState<string[]>([...DEFAULT_HEADERS]);
   const [rows, setRows] = useState<TableRowData[]>([...DEFAULT_ROWS]);
+  const [selectedTemplate, setSelectedTemplate] = useState<PageTemplate<DataTableTemplateData> | null>(null);
+
+  const getCurrentData = (): DataTableTemplateData => ({
+    tableTitle,
+    headers,
+    rows,
+  });
+
+  const handleLoadTemplate = (data: DataTableTemplateData, primaryColor: string, accentColor: string) => {
+    setTableTitle(data.tableTitle);
+    setHeaders(data.headers);
+    setRows(data.rows);
+    setPrimaryLineColor(primaryColor);
+    setAccentLineColor(accentColor);
+  };
 
   const handleHeaderChange = (index: number, value: string) => {
     const updated = [...headers];
@@ -75,6 +98,7 @@ const DataTablePage = () => {
     setTableTitle("Equipment Schedule");
     setHeaders([...DEFAULT_HEADERS]);
     setRows([...DEFAULT_ROWS]);
+    setSelectedTemplate(null);
     toast.success("Reset to defaults");
   };
 
@@ -111,7 +135,14 @@ const DataTablePage = () => {
             <h1 className="text-3xl font-bold text-foreground">Data Table Page</h1>
             <p className="text-muted-foreground mt-1">Create customizable data tables for your reports</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 items-start">
+            <PageTemplateManager<DataTableTemplateData>
+              pageType="data_table"
+              currentData={getCurrentData()}
+              onLoadTemplate={handleLoadTemplate}
+              selectedTemplate={selectedTemplate}
+              onSelectTemplate={setSelectedTemplate}
+            />
             <Button variant="outline" onClick={handleReset}>
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset

@@ -8,6 +8,8 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { generateSummaryTableDocument } from "@/utils/generateTableDocument";
+import PageTemplateManager from "@/components/PageTemplateManager";
+import { PageTemplate } from "@/hooks/useCloudPageTemplates";
 
 interface MetricItem {
   id: string;
@@ -26,11 +28,32 @@ const DEFAULT_METRICS: MetricItem[] = [
   { id: "7", label: "Spare Capacity", value: "22.9", unit: "%" },
 ];
 
+interface SummaryTableTemplateData {
+  tableTitle: string;
+  subtitle: string;
+  metrics: MetricItem[];
+}
+
 const SummaryTablePage = () => {
-  const { primaryLineColor, accentLineColor } = useTheme();
+  const { primaryLineColor, accentLineColor, setPrimaryLineColor, setAccentLineColor } = useTheme();
   const [tableTitle, setTableTitle] = useState("Project Summary");
   const [subtitle, setSubtitle] = useState("Key Metrics & Calculations");
   const [metrics, setMetrics] = useState<MetricItem[]>([...DEFAULT_METRICS]);
+  const [selectedTemplate, setSelectedTemplate] = useState<PageTemplate<SummaryTableTemplateData> | null>(null);
+
+  const getCurrentData = (): SummaryTableTemplateData => ({
+    tableTitle,
+    subtitle,
+    metrics,
+  });
+
+  const handleLoadTemplate = (data: SummaryTableTemplateData, primaryColor: string, accentColor: string) => {
+    setTableTitle(data.tableTitle);
+    setSubtitle(data.subtitle);
+    setMetrics(data.metrics);
+    setPrimaryLineColor(primaryColor);
+    setAccentLineColor(accentColor);
+  };
 
   const handleMetricChange = (index: number, field: keyof MetricItem, value: string) => {
     const updated = [...metrics];
@@ -52,6 +75,7 @@ const SummaryTablePage = () => {
     setTableTitle("Project Summary");
     setSubtitle("Key Metrics & Calculations");
     setMetrics([...DEFAULT_METRICS]);
+    setSelectedTemplate(null);
     toast.success("Reset to defaults");
   };
 
@@ -88,7 +112,14 @@ const SummaryTablePage = () => {
             <h1 className="text-3xl font-bold text-foreground">Summary Table</h1>
             <p className="text-muted-foreground mt-1">Display key metrics and values</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 items-start">
+            <PageTemplateManager<SummaryTableTemplateData>
+              pageType="summary_table"
+              currentData={getCurrentData()}
+              onLoadTemplate={handleLoadTemplate}
+              selectedTemplate={selectedTemplate}
+              onSelectTemplate={setSelectedTemplate}
+            />
             <Button variant="outline" onClick={handleReset}>
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset
