@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { generateSummaryTableDocument } from "@/utils/generateTableDocument";
 
 interface MetricItem {
   id: string;
@@ -54,8 +55,20 @@ const SummaryTablePage = () => {
     toast.success("Reset to defaults");
   };
 
-  const handleDownload = () => {
-    toast.success("Summary table downloaded!");
+  const handleDownload = async () => {
+    try {
+      await generateSummaryTableDocument({
+        title: tableTitle,
+        subtitle,
+        metrics,
+        primaryLineColor,
+        accentLineColor,
+      });
+      toast.success("Summary table downloaded!");
+    } catch (error) {
+      console.error("Error generating document:", error);
+      toast.error("Failed to generate document");
+    }
   };
 
   useKeyboardShortcuts({

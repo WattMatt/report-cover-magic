@@ -9,6 +9,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { generateBarLineChartDocument } from "@/utils/generateChartDocument";
 
 interface DataPoint {
   label: string;
@@ -57,8 +58,22 @@ const BarLineChartPage = () => {
     toast.success("Reset to defaults");
   };
 
-  const handleDownload = () => {
-    toast.success("Chart page downloaded!");
+  const handleDownload = async () => {
+    try {
+      await generateBarLineChartDocument({
+        title: chartTitle,
+        chartType,
+        xAxisLabel,
+        yAxisLabel,
+        dataPoints,
+        primaryLineColor,
+        accentLineColor,
+      });
+      toast.success("Chart document downloaded!");
+    } catch (error) {
+      console.error("Error generating document:", error);
+      toast.error("Failed to generate document");
+    }
   };
 
   useKeyboardShortcuts({
