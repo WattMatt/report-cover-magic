@@ -3,7 +3,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Upload, X } from "lucide-react";
+import { Upload, X, Palette } from "lucide-react";
+
+const COLOR_THEMES = [
+  { name: "Corporate Blue", primary: "#1565C0", accent: "#D4A853" },
+  { name: "Elegant Gold", primary: "#B8860B", accent: "#1A1A1A" },
+  { name: "Modern Green", primary: "#2E7D32", accent: "#FFB300" },
+  { name: "Executive Gray", primary: "#455A64", accent: "#78909C" },
+  { name: "Royal Purple", primary: "#6A1B9A", accent: "#E1BEE7" },
+  { name: "Warm Terracotta", primary: "#BF360C", accent: "#FFAB91" },
+];
 
 interface CoverPageFormProps {
   reportTitle: string;
@@ -240,15 +249,51 @@ const CoverPageForm = ({
         />
       </div>
 
-      {/* Line Color Customization */}
+      {/* Color Theme Presets */}
       <div className="pt-4 border-t border-border">
         <Label className="text-sm font-medium text-foreground mb-3 block">
-          Line Colors
+          <Palette className="inline-block h-4 w-4 mr-1.5 -mt-0.5" />
+          Color Themes
+        </Label>
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          {COLOR_THEMES.map((theme) => (
+            <button
+              key={theme.name}
+              type="button"
+              onClick={() => {
+                setPrimaryLineColor(theme.primary);
+                setAccentLineColor(theme.accent);
+              }}
+              className={`relative p-2 rounded-lg border transition-all hover:scale-105 ${
+                primaryLineColor === theme.primary && accentLineColor === theme.accent
+                  ? "border-primary ring-2 ring-primary/30"
+                  : "border-border hover:border-muted-foreground"
+              }`}
+            >
+              <div className="flex gap-1 mb-1.5 justify-center">
+                <div
+                  className="w-5 h-5 rounded-full border border-border"
+                  style={{ backgroundColor: theme.primary }}
+                />
+                <div
+                  className="w-5 h-5 rounded-full border border-border"
+                  style={{ backgroundColor: theme.accent }}
+                />
+              </div>
+              <span className="text-xs text-muted-foreground block truncate">
+                {theme.name}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <Label className="text-xs text-muted-foreground mb-2 block">
+          Or customize manually:
         </Label>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="primaryLineColor" className="text-xs text-muted-foreground">
-              Primary Lines (Blue)
+              Primary Lines
             </Label>
             <div className="flex items-center gap-2">
               <input
@@ -268,7 +313,7 @@ const CoverPageForm = ({
           </div>
           <div className="space-y-2">
             <Label htmlFor="accentLineColor" className="text-xs text-muted-foreground">
-              Accent Lines (Gold)
+              Accent Lines
             </Label>
             <div className="flex items-center gap-2">
               <input
