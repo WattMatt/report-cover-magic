@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, Reorder } from "framer-motion";
-import { Download, Trash2, GripVertical, FileText, BookOpen, FileSpreadsheet, Layers, History, Save, FolderOpen } from "lucide-react";
+import { Download, Trash2, GripVertical, FileText, BookOpen, FileSpreadsheet, Layers, History, Save, FolderOpen, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,9 +25,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { generateMultiPageDocument, PageConfig, PageType } from "@/utils/generateMultiPageDocument";
-import { useReportTemplates, ReportTemplate } from "@/hooks/useReportTemplates";
+import { useCloudReportTemplates, ReportTemplate } from "@/hooks/useCloudReportTemplates";
 import wmLogo from "@/assets/wm-logo.jpg";
 
 const PAGE_TYPE_INFO = {
@@ -102,7 +103,8 @@ interface PageItem {
 
 const MultiPageBuilderPage = () => {
   const { primaryLineColor, accentLineColor, setPrimaryLineColor, setAccentLineColor } = useTheme();
-  const { templates, saveTemplate, deleteTemplate } = useReportTemplates();
+  const { user } = useAuth();
+  const { templates, loading: templatesLoading, saveTemplate, deleteTemplate } = useCloudReportTemplates();
   const [pages, setPages] = useState<PageItem[]>([
     { id: crypto.randomUUID(), config: createDefaultPage("cover") },
     { id: crypto.randomUUID(), config: createDefaultPage("toc") },
@@ -111,6 +113,7 @@ const MultiPageBuilderPage = () => {
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [loadDialogOpen, setLoadDialogOpen] = useState(false);
   const [templateName, setTemplateName] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   // Load default logo
   useState(() => {
@@ -156,18 +159,20 @@ const MultiPageBuilderPage = () => {
     }
   };
 
-  const handleSaveTemplate = () => {
+  const handleSaveTemplate = async () => {
     if (!templateName.trim()) return;
     if (pages.length === 0) {
       toast.error("Add at least one page to save as template");
       return;
     }
-    saveTemplate(
+    setIsSaving(true);
+    await saveTemplate(
       templateName.trim(),
       pages.map((p) => p.config),
       primaryLineColor,
       accentLineColor
     );
+    setIsSaving(false);
     setTemplateName("");
     setSaveDialogOpen(false);
   };
@@ -380,60 +385,75 @@ const MultiPageBuilderPage = () => {
               </p>
             </div>
             <div className="flex gap-2 flex-shrink-0">
-              {/* Save Template Dialog */}
-              <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <Save className="h-4 w-4" />
-                    Save
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Save Report Template</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="templateName">Template Name</Label>
-                      <Input
-                        id="templateName"
-                        value={templateName}
-                        onChange={(e) => setTemplateName(e.target.value)}
-                        placeholder="e.g., Standard Engineering Report"
-                        onKeyDown={(e) => e.key === "Enter" && handleSaveTemplate()}
-                      />
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      This will save {pages.length} page{pages.length !== 1 ? "s" : ""} and current theme colors.
-                    </div>
-                    <Button onClick={handleSaveTemplate} disabled={!templateName.trim()} className="w-full">
-                      <Save className="h-4 w-4 mr-2" />
-                      Save Template
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-
-              {/* Load Template Dialog */}
-              <Dialog open={loadDialogOpen} onOpenChange={setLoadDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <FolderOpen className="h-4 w-4" />
-                    Load
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Load Report Template</DialogTitle>
-                  </DialogHeader>
-                  <div className="py-4">
-                    {templates.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <FolderOpen className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                        <p>No saved templates yet.</p>
-                        <p className="text-sm">Save your first template to get started!</p>
+              {!user ? (
+                <Button variant="outline" size="sm" disabled className="gap-2">
+                  <Save className="h-4 w-4" />
+                  Sign in to save
+                </Button>
+              ) : (
+                <>
+                  {/* Save Template Dialog */}
+                  <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="gap-2">
+                        <Save className="h-4 w-4" />
+                        Save
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Save Report Template</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="templateName">Template Name</Label>
+                          <Input
+                            id="templateName"
+                            value={templateName}
+                            onChange={(e) => setTemplateName(e.target.value)}
+                            placeholder="e.g., Standard Engineering Report"
+                            onKeyDown={(e) => e.key === "Enter" && handleSaveTemplate()}
+                          />
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          This will save {pages.length} page{pages.length !== 1 ? "s" : ""} and current theme colors.
+                        </div>
+                        <Button onClick={handleSaveTemplate} disabled={!templateName.trim() || isSaving} className="w-full">
+                          {isSaving ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <Save className="h-4 w-4 mr-2" />
+                          )}
+                          Save Template
+                        </Button>
                       </div>
-                    ) : (
+                    </DialogContent>
+                  </Dialog>
+
+                  {/* Load Template Dialog */}
+                  <Dialog open={loadDialogOpen} onOpenChange={setLoadDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="gap-2">
+                        <FolderOpen className="h-4 w-4" />
+                        Load
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Load Report Template</DialogTitle>
+                      </DialogHeader>
+                      <div className="py-4">
+                        {templatesLoading ? (
+                          <div className="flex justify-center py-8">
+                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                          </div>
+                        ) : templates.length === 0 ? (
+                          <div className="text-center py-8 text-muted-foreground">
+                            <FolderOpen className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                            <p>No saved templates yet.</p>
+                            <p className="text-sm">Save your first template to get started!</p>
+                          </div>
+                        ) : (
                       <div className="space-y-2 max-h-[300px] overflow-auto">
                         {templates.map((template) => (
                           <div
@@ -496,6 +516,8 @@ const MultiPageBuilderPage = () => {
                   </div>
                 </DialogContent>
               </Dialog>
+            </>
+              )}
 
               <Button onClick={handleDownload} size="sm" className="gap-2">
                 <Download className="h-4 w-4" />

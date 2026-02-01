@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Save, FolderOpen, Trash2, X } from "lucide-react";
+import { Save, FolderOpen, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,34 +21,50 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useTemplates, CoverPageTemplate } from "@/hooks/useTemplates";
+import { useCloudTemplates, CoverPageTemplateData } from "@/hooks/useCloudTemplates";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface TemplateManagerProps {
-  currentData: CoverPageTemplate["data"];
-  onLoadTemplate: (data: CoverPageTemplate["data"]) => void;
+  currentData: CoverPageTemplateData;
+  onLoadTemplate: (data: CoverPageTemplateData) => void;
 }
 
 const TemplateManager = ({ currentData, onLoadTemplate }: TemplateManagerProps) => {
-  const { templates, saveTemplate, deleteTemplate } = useTemplates();
+  const { templates, loading, saveTemplate, deleteTemplate } = useCloudTemplates();
+  const { user } = useAuth();
   const { setPrimaryLineColor, setAccentLineColor } = useTheme();
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [loadDialogOpen, setLoadDialogOpen] = useState(false);
   const [templateName, setTemplateName] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!templateName.trim()) return;
-    saveTemplate(templateName.trim(), currentData);
+    setIsSaving(true);
+    await saveTemplate(templateName.trim(), currentData);
+    setIsSaving(false);
     setTemplateName("");
     setSaveDialogOpen(false);
   };
 
-  const handleLoad = (template: CoverPageTemplate) => {
+  const handleLoad = (template: { data: CoverPageTemplateData }) => {
     onLoadTemplate(template.data);
     setPrimaryLineColor(template.data.primaryLineColor);
     setAccentLineColor(template.data.accentLineColor);
     setLoadDialogOpen(false);
   };
+
+  if (!user) {
+    return (
+      <div className="flex gap-2">
+        <Button variant="outline" size="sm" disabled className="gap-2">
+          <Save className="h-4 w-4" />
+          Sign in to save templates
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex gap-2">
@@ -75,8 +91,12 @@ const TemplateManager = ({ currentData, onLoadTemplate }: TemplateManagerProps) 
                 onKeyDown={(e) => e.key === "Enter" && handleSave()}
               />
             </div>
-            <Button onClick={handleSave} disabled={!templateName.trim()} className="w-full">
-              <Save className="h-4 w-4 mr-2" />
+            <Button onClick={handleSave} disabled={!templateName.trim() || isSaving} className="w-full">
+              {isSaving ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
               Save Template
             </Button>
           </div>
@@ -96,7 +116,11 @@ const TemplateManager = ({ currentData, onLoadTemplate }: TemplateManagerProps) 
             <DialogTitle>Load Template</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            {templates.length === 0 ? (
+            {loading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : templates.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <FolderOpen className="h-12 w-12 mx-auto mb-3 opacity-50" />
                 <p>No saved templates yet.</p>

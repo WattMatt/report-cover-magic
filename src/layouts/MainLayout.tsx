@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { UserMenu } from "@/components/UserMenu";
 import { Zap, FileText } from "lucide-react";
 
 const MainLayout = () => {
@@ -22,9 +23,12 @@ const MainLayout = () => {
                 <p className="text-xs text-white/70">Professional Document Templates</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-white/70">
-              <FileText className="h-4 w-4" />
-              <span>Word Export</span>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm text-white/70">
+                <FileText className="h-4 w-4" />
+                <span>Word Export</span>
+              </div>
+              <UserMenu />
             </div>
           </header>
 
