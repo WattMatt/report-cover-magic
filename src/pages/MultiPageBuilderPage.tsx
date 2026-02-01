@@ -1,15 +1,33 @@
 import { useState } from "react";
 import { motion, Reorder } from "framer-motion";
-import { Download, Plus, Trash2, GripVertical, FileText, BookOpen, FileSpreadsheet, Layers, History } from "lucide-react";
+import { Download, Trash2, GripVertical, FileText, BookOpen, FileSpreadsheet, Layers, History, Save, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { generateMultiPageDocument, PageConfig, PageType } from "@/utils/generateMultiPageDocument";
+import { useReportTemplates, ReportTemplate } from "@/hooks/useReportTemplates";
 import wmLogo from "@/assets/wm-logo.jpg";
 
 const PAGE_TYPE_INFO = {
@@ -83,12 +101,16 @@ interface PageItem {
 }
 
 const MultiPageBuilderPage = () => {
-  const { primaryLineColor, accentLineColor } = useTheme();
+  const { primaryLineColor, accentLineColor, setPrimaryLineColor, setAccentLineColor } = useTheme();
+  const { templates, saveTemplate, deleteTemplate } = useReportTemplates();
   const [pages, setPages] = useState<PageItem[]>([
     { id: crypto.randomUUID(), config: createDefaultPage("cover") },
     { id: crypto.randomUUID(), config: createDefaultPage("toc") },
   ]);
   const [logoBase64, setLogoBase64] = useState<string>("");
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [loadDialogOpen, setLoadDialogOpen] = useState(false);
+  const [templateName, setTemplateName] = useState("");
 
   // Load default logo
   useState(() => {
@@ -132,6 +154,30 @@ const MultiPageBuilderPage = () => {
       toast.error("Failed to generate document");
       console.error(error);
     }
+  };
+
+  const handleSaveTemplate = () => {
+    if (!templateName.trim()) return;
+    if (pages.length === 0) {
+      toast.error("Add at least one page to save as template");
+      return;
+    }
+    saveTemplate(
+      templateName.trim(),
+      pages.map((p) => p.config),
+      primaryLineColor,
+      accentLineColor
+    );
+    setTemplateName("");
+    setSaveDialogOpen(false);
+  };
+
+  const handleLoadTemplate = (template: ReportTemplate) => {
+    setPages(template.pages.map((config) => ({ id: crypto.randomUUID(), config })));
+    setPrimaryLineColor(template.primaryLineColor);
+    setAccentLineColor(template.accentLineColor);
+    setLoadDialogOpen(false);
+    toast.success(`Template "${template.name}" loaded!`);
   };
 
   const renderPageEditor = (item: PageItem) => {
@@ -326,17 +372,136 @@ const MultiPageBuilderPage = () => {
     <div className="flex-1 p-8">
       <div className="max-w-4xl mx-auto">
         <div className="space-y-6">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold text-foreground mb-2">Multi-Page Document Builder</h2>
               <p className="text-muted-foreground">
                 Combine multiple page types into a single Word document. Drag to reorder.
               </p>
             </div>
-            <Button onClick={handleDownload} size="lg" className="gap-2">
-              <Download className="h-5 w-5" />
-              Export Document
-            </Button>
+            <div className="flex gap-2 flex-shrink-0">
+              {/* Save Template Dialog */}
+              <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <Save className="h-4 w-4" />
+                    Save
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Save Report Template</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="templateName">Template Name</Label>
+                      <Input
+                        id="templateName"
+                        value={templateName}
+                        onChange={(e) => setTemplateName(e.target.value)}
+                        placeholder="e.g., Standard Engineering Report"
+                        onKeyDown={(e) => e.key === "Enter" && handleSaveTemplate()}
+                      />
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      This will save {pages.length} page{pages.length !== 1 ? "s" : ""} and current theme colors.
+                    </div>
+                    <Button onClick={handleSaveTemplate} disabled={!templateName.trim()} className="w-full">
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Template
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              {/* Load Template Dialog */}
+              <Dialog open={loadDialogOpen} onOpenChange={setLoadDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <FolderOpen className="h-4 w-4" />
+                    Load
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Load Report Template</DialogTitle>
+                  </DialogHeader>
+                  <div className="py-4">
+                    {templates.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <FolderOpen className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                        <p>No saved templates yet.</p>
+                        <p className="text-sm">Save your first template to get started!</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 max-h-[300px] overflow-auto">
+                        {templates.map((template) => (
+                          <div
+                            key={template.id}
+                            className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors"
+                          >
+                            <button
+                              onClick={() => handleLoadTemplate(template)}
+                              className="flex-1 text-left"
+                            >
+                              <div className="font-medium">{template.name}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {template.pages.length} page{template.pages.length !== 1 ? "s" : ""} • {new Date(template.createdAt).toLocaleDateString()}
+                              </div>
+                            </button>
+                            <div className="flex items-center gap-2 ml-2">
+                              <div className="flex gap-1">
+                                <div
+                                  className="w-4 h-4 rounded-full border"
+                                  style={{ backgroundColor: template.primaryLineColor }}
+                                />
+                                <div
+                                  className="w-4 h-4 rounded-full border"
+                                  style={{ backgroundColor: template.accentLineColor }}
+                                />
+                              </div>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-destructive hover:text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Template?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      This will permanently delete "{template.name}". This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => deleteTemplate(template.id)}
+                                      className="bg-destructive hover:bg-destructive/90"
+                                    >
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              <Button onClick={handleDownload} size="sm" className="gap-2">
+                <Download className="h-4 w-4" />
+                Export
+              </Button>
+            </div>
           </div>
 
           {/* Add Page Buttons */}
