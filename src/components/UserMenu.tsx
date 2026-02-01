@@ -1,4 +1,5 @@
-import { LogOut, User, Settings } from "lucide-react";
+import { useState } from "react";
+import { LogOut, User, Settings, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,6 +14,41 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+
+interface AvatarWithLoaderProps {
+  src?: string | null;
+  alt: string;
+  initials: string;
+}
+
+const AvatarWithLoader = ({ src, alt, initials }: AvatarWithLoaderProps) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  return (
+    <Avatar className="h-8 w-8">
+      {src && !hasError && (
+        <AvatarImage 
+          src={src} 
+          alt={alt}
+          onLoad={() => setIsLoading(false)}
+          onError={() => {
+            setIsLoading(false);
+            setHasError(true);
+          }}
+          className={isLoading ? "opacity-0" : "opacity-100 transition-opacity duration-200"}
+        />
+      )}
+      <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+        {src && isLoading && !hasError ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          initials
+        )}
+      </AvatarFallback>
+    </Avatar>
+  );
+};
 
 export function UserMenu() {
   const { user, signOut } = useAuth();
@@ -55,14 +91,11 @@ export function UserMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 rounded-full gap-2 px-2">
-          <Avatar className="h-8 w-8">
-            {profile?.avatar_url && (
-              <AvatarImage src={profile.avatar_url} alt={displayName || "User avatar"} />
-            )}
-            <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+          <AvatarWithLoader
+            src={profile?.avatar_url}
+            alt={displayName || "User avatar"}
+            initials={initials}
+          />
           {displayName && (
             <span className="text-sm font-medium hidden sm:inline-block max-w-[120px] truncate">
               {displayName}
