@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Download, FileText, Zap } from "lucide-react";
+import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CoverPagePreview from "@/components/CoverPagePreview";
 import CoverPageForm from "@/components/CoverPageForm";
 import { generateWordDocument } from "@/utils/generateWordDocument";
 import { toast } from "sonner";
+import { useTheme } from "@/contexts/ThemeContext";
 import wmLogo from "@/assets/wm-logo.jpg";
 
-const Index = () => {
+const CoverPage = () => {
+  const { primaryLineColor, accentLineColor, customLogo } = useTheme();
+  
   const [reportTitle, setReportTitle] = useState("Electrical Load\nEstimate Report");
   const [projectName, setProjectName] = useState("Central Plaza Shopping Centre");
   const [projectSubtitle, setProjectSubtitle] = useState("Retail Development");
@@ -19,9 +22,6 @@ const Index = () => {
   const [preparedBy, setPreparedBy] = useState("WM Engineering");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [customLogo, setCustomLogo] = useState<string | null>(null);
-  const [primaryLineColor, setPrimaryLineColor] = useState("#1565C0");
-  const [accentLineColor, setAccentLineColor] = useState("#D4A853");
 
   const handleDownload = async () => {
     setIsGenerating(true);
@@ -29,10 +29,8 @@ const Index = () => {
       let logoBase64: string;
 
       if (customLogo) {
-        // Use custom logo directly (already base64)
         logoBase64 = customLogo;
       } else {
-        // Convert default logo to base64
         const response = await fetch(wmLogo);
         const blob = await response.blob();
         logoBase64 = await new Promise<string>((resolve) => {
@@ -72,32 +70,8 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-cover-gradient text-cover-text-light py-6 px-8 shadow-lg"
-      >
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-white/10 p-2 rounded-lg backdrop-blur-sm">
-              <Zap className="h-6 w-6" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-wide">Cover Page Generator</h1>
-              <p className="text-sm text-white/70">Electrical Load Estimate Report</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-white/70">
-            <FileText className="h-4 w-4" />
-            <span>Word Document Export</span>
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-8 py-10">
+    <div className="flex-1 p-8">
+      <div className="max-w-6xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-10">
           {/* Form Section */}
           <motion.div
@@ -108,7 +82,7 @@ const Index = () => {
           >
             <div>
               <h2 className="text-2xl font-bold text-foreground mb-2">
-                Document Details
+                Cover Page
               </h2>
               <p className="text-muted-foreground">
                 Fill in the project information to customize your cover page.
@@ -135,12 +109,6 @@ const Index = () => {
                 setPreparedBy={setPreparedBy}
                 date={date}
                 setDate={setDate}
-                customLogo={customLogo}
-                setCustomLogo={setCustomLogo}
-                primaryLineColor={primaryLineColor}
-                setPrimaryLineColor={setPrimaryLineColor}
-                accentLineColor={accentLineColor}
-                setAccentLineColor={setAccentLineColor}
               />
 
               <Button
@@ -207,16 +175,9 @@ const Index = () => {
             </div>
           </motion.div>
         </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-secondary/50 border-t border-border py-6 px-8 mt-10">
-        <div className="max-w-7xl mx-auto text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} WM Engineering. Professional Document Solutions.</p>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 };
 
-export default Index;
+export default CoverPage;
