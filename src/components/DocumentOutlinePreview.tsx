@@ -1,6 +1,13 @@
 import { Reorder } from "framer-motion";
-import { FileText, BookOpen, FileSpreadsheet, Layers, History, ChevronRight, GripVertical } from "lucide-react";
+import { FileText, BookOpen, FileSpreadsheet, Layers, History, ChevronRight, GripVertical, Copy, Trash2 } from "lucide-react";
 import { PageConfig, PageType } from "@/utils/generateMultiPageDocument";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 interface PageItem {
   id: string;
@@ -12,6 +19,8 @@ interface DocumentOutlinePreviewProps {
   primaryLineColor: string;
   accentLineColor: string;
   onReorder?: (pages: PageItem[]) => void;
+  onDuplicate?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
 const PAGE_TYPE_INFO: Record<PageType, { label: string; icon: typeof FileText; description: string }> = {
@@ -45,6 +54,8 @@ interface OutlineItemProps {
   primaryLineColor: string;
   accentLineColor: string;
   isDraggable?: boolean;
+  onDuplicate?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
 const OutlineItem = ({
@@ -53,12 +64,14 @@ const OutlineItem = ({
   primaryLineColor,
   accentLineColor,
   isDraggable = false,
+  onDuplicate,
+  onDelete,
 }: OutlineItemProps) => {
   const info = PAGE_TYPE_INFO[item.config.type];
   const Icon = info.icon;
   const pageNumber = index + 1;
 
-  return (
+  const content = (
     <div className="px-4 py-3 flex items-center gap-3 hover:bg-muted/30 transition-colors bg-card">
       {/* Drag Handle */}
       {isDraggable && (
@@ -98,6 +111,37 @@ const OutlineItem = ({
       </div>
     </div>
   );
+
+  // If context menu handlers are provided, wrap in context menu
+  if (onDuplicate || onDelete) {
+    return (
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          {content}
+        </ContextMenuTrigger>
+        <ContextMenuContent className="w-48">
+          {onDuplicate && (
+            <ContextMenuItem onClick={() => onDuplicate(item.id)} className="gap-2">
+              <Copy className="h-4 w-4" />
+              Duplicate Page
+            </ContextMenuItem>
+          )}
+          {onDuplicate && onDelete && <ContextMenuSeparator />}
+          {onDelete && (
+            <ContextMenuItem 
+              onClick={() => onDelete(item.id)} 
+              className="gap-2 text-destructive focus:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Page
+            </ContextMenuItem>
+          )}
+        </ContextMenuContent>
+      </ContextMenu>
+    );
+  }
+
+  return content;
 };
 
 export const DocumentOutlinePreview = ({
@@ -105,6 +149,8 @@ export const DocumentOutlinePreview = ({
   primaryLineColor,
   accentLineColor,
   onReorder,
+  onDuplicate,
+  onDelete,
 }: DocumentOutlinePreviewProps) => {
   if (pages.length === 0) return null;
 
@@ -141,6 +187,8 @@ export const DocumentOutlinePreview = ({
                   primaryLineColor={primaryLineColor}
                   accentLineColor={accentLineColor}
                   isDraggable
+                  onDuplicate={onDuplicate}
+                  onDelete={onDelete}
                 />
               </Reorder.Item>
             ))}
@@ -153,6 +201,8 @@ export const DocumentOutlinePreview = ({
               index={index}
               primaryLineColor={primaryLineColor}
               accentLineColor={accentLineColor}
+              onDuplicate={onDuplicate}
+              onDelete={onDelete}
             />
           ))
         )}
