@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
+import { generateTableOfContents } from "@/utils/generateTableOfContents";
 
 interface TOCEntry {
   title: string;
@@ -47,6 +48,21 @@ const TableOfContentsPage = () => {
     setDocumentTitle("Table of Contents");
     setEntries([...DEFAULT_ENTRIES]);
     toast.success("Form reset to defaults");
+  };
+
+  const handleDownload = async () => {
+    try {
+      await generateTableOfContents({
+        documentTitle,
+        entries,
+        primaryLineColor,
+        accentLineColor,
+      });
+      toast.success("Document downloaded!");
+    } catch (error) {
+      toast.error("Failed to generate document");
+      console.error(error);
+    }
   };
 
   return (
@@ -110,7 +126,7 @@ const TableOfContentsPage = () => {
                   <RotateCcw className="h-4 w-4 mr-2" />
                   Reset
                 </Button>
-                <Button className="flex-[2]">
+                <Button className="flex-[2]" onClick={handleDownload}>
                   <Download className="h-4 w-4 mr-2" />
                   Download
                 </Button>

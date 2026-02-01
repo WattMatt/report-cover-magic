@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
+import { generateSectionDivider } from "@/utils/generateSectionDivider";
 
 const DEFAULTS = {
   sectionNumber: "Section 1",
@@ -24,6 +25,22 @@ const SectionDividerPage = () => {
     setSectionTitle(DEFAULTS.sectionTitle);
     setSectionSubtitle(DEFAULTS.sectionSubtitle);
     toast.success("Form reset to defaults");
+  };
+
+  const handleDownload = async () => {
+    try {
+      await generateSectionDivider({
+        sectionNumber,
+        sectionTitle,
+        sectionSubtitle,
+        primaryLineColor,
+        accentLineColor,
+      });
+      toast.success("Document downloaded!");
+    } catch (error) {
+      toast.error("Failed to generate document");
+      console.error(error);
+    }
   };
 
   return (
@@ -74,7 +91,7 @@ const SectionDividerPage = () => {
                   <RotateCcw className="h-4 w-4 mr-2" />
                   Reset
                 </Button>
-                <Button className="flex-[2]">
+                <Button className="flex-[2]" onClick={handleDownload}>
                   <Download className="h-4 w-4 mr-2" />
                   Download
                 </Button>
