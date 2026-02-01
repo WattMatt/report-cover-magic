@@ -11,6 +11,14 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const DEFAULT_BAR_DATA = [
   { name: "Q1", value: 4000 },
@@ -35,12 +43,20 @@ const DEFAULT_PIE_DATA = [
   { name: "Category D", value: 100, color: "#C62828" },
 ];
 
+const DEFAULT_TABLE_DATA = [
+  { id: 1, item: "Item A", quantity: 150, revenue: "$12,500", status: "Complete" },
+  { id: 2, item: "Item B", quantity: 230, revenue: "$18,400", status: "In Progress" },
+  { id: 3, item: "Item C", quantity: 89, revenue: "$7,120", status: "Complete" },
+  { id: 4, item: "Item D", quantity: 312, revenue: "$24,960", status: "Pending" },
+];
+
 const DashboardPage = () => {
   const { primaryLineColor, accentLineColor } = useTheme();
   const [dashboardTitle, setDashboardTitle] = useState("Performance Dashboard");
   const [barChartTitle, setBarChartTitle] = useState("Quarterly Results");
   const [lineChartTitle, setLineChartTitle] = useState("Monthly Trend");
   const [pieChartTitle, setPieChartTitle] = useState("Distribution");
+  const [tableTitle, setTableTitle] = useState("Summary Data");
   const [metricValue, setMetricValue] = useState("$125,000");
   const [metricLabel, setMetricLabel] = useState("Total Revenue");
 
@@ -49,6 +65,7 @@ const DashboardPage = () => {
     setBarChartTitle("Quarterly Results");
     setLineChartTitle("Monthly Trend");
     setPieChartTitle("Distribution");
+    setTableTitle("Summary Data");
     setMetricValue("$125,000");
     setMetricLabel("Total Revenue");
     toast.success("Reset to defaults");
@@ -111,6 +128,11 @@ const DashboardPage = () => {
               <div className="space-y-2">
                 <Label>Pie Chart Title</Label>
                 <Input value={pieChartTitle} onChange={(e) => setPieChartTitle(e.target.value)} />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Table Title</Label>
+                <Input value={tableTitle} onChange={(e) => setTableTitle(e.target.value)} />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -195,6 +217,45 @@ const DashboardPage = () => {
                       <Legend />
                     </PieChart>
                   </ResponsiveContainer>
+                </div>
+
+                {/* Data Table */}
+                <div className="border rounded-lg p-4 md:col-span-2">
+                  <h3 className="font-semibold mb-3 text-sm" style={{ color: primaryLineColor }}>{tableTitle}</h3>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs" style={{ color: primaryLineColor }}>Item</TableHead>
+                        <TableHead className="text-xs text-right" style={{ color: primaryLineColor }}>Quantity</TableHead>
+                        <TableHead className="text-xs text-right" style={{ color: primaryLineColor }}>Revenue</TableHead>
+                        <TableHead className="text-xs text-right" style={{ color: primaryLineColor }}>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {DEFAULT_TABLE_DATA.map((row) => (
+                        <TableRow key={row.id}>
+                          <TableCell className="text-xs font-medium">{row.item}</TableCell>
+                          <TableCell className="text-xs text-right">{row.quantity}</TableCell>
+                          <TableCell className="text-xs text-right">{row.revenue}</TableCell>
+                          <TableCell className="text-xs text-right">
+                            <span 
+                              className="px-2 py-1 rounded-full text-xs"
+                              style={{ 
+                                backgroundColor: row.status === "Complete" ? "#2E7D3220" : 
+                                                 row.status === "In Progress" ? `${primaryLineColor}20` : 
+                                                 `${accentLineColor}20`,
+                                color: row.status === "Complete" ? "#2E7D32" : 
+                                       row.status === "In Progress" ? primaryLineColor : 
+                                       accentLineColor
+                              }}
+                            >
+                              {row.status}
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               </div>
             </div>
