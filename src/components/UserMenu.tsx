@@ -11,10 +11,26 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export function UserMenu() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name, avatar_url")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user?.id,
+  });
 
   const handleSignOut = async () => {
     await signOut();
@@ -30,23 +46,33 @@ export function UserMenu() {
     );
   }
 
-  const initials = user.email?.slice(0, 2).toUpperCase() || "U";
+  const displayName = profile?.display_name;
+  const initials = displayName
+    ? displayName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
+    : user.email?.slice(0, 2).toUpperCase() || "U";
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-          <Avatar className="h-9 w-9">
+        <Button variant="ghost" className="relative h-9 rounded-full gap-2 px-2">
+          <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-primary text-primary-foreground text-sm">
               {initials}
             </AvatarFallback>
           </Avatar>
+          {displayName && (
+            <span className="text-sm font-medium hidden sm:inline-block max-w-[120px] truncate">
+              {displayName}
+            </span>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Account</p>
+            <p className="text-sm font-medium leading-none">
+              {displayName || "Account"}
+            </p>
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>
