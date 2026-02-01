@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { generateComparisonTableDocument } from "@/utils/generateTableDocument";
 
 interface FeatureRow {
   id: string;
@@ -85,8 +86,20 @@ const ComparisonTablePage = () => {
     toast.success("Reset to defaults");
   };
 
-  const handleDownload = () => {
-    toast.success("Comparison table downloaded!");
+  const handleDownload = async () => {
+    try {
+      await generateComparisonTableDocument({
+        title: tableTitle,
+        options,
+        features,
+        primaryLineColor,
+        accentLineColor,
+      });
+      toast.success("Comparison table downloaded!");
+    } catch (error) {
+      console.error("Error generating document:", error);
+      toast.error("Failed to generate document");
+    }
   };
 
   useKeyboardShortcuts({

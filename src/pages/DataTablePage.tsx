@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { generateDataTableDocument } from "@/utils/generateTableDocument";
 
 interface TableRowData {
   id: string;
@@ -77,8 +78,20 @@ const DataTablePage = () => {
     toast.success("Reset to defaults");
   };
 
-  const handleDownload = () => {
-    toast.success("Table page downloaded!");
+  const handleDownload = async () => {
+    try {
+      await generateDataTableDocument({
+        title: tableTitle,
+        headers,
+        rows,
+        primaryLineColor,
+        accentLineColor,
+      });
+      toast.success("Table document downloaded!");
+    } catch (error) {
+      console.error("Error generating document:", error);
+      toast.error("Failed to generate document");
+    }
   };
 
   useKeyboardShortcuts({

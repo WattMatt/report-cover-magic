@@ -9,6 +9,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { generatePieChartDocument } from "@/utils/generateChartDocument";
 
 interface DataSlice {
   name: string;
@@ -56,8 +57,20 @@ const PieChartPage = () => {
     toast.success("Reset to defaults");
   };
 
-  const handleDownload = () => {
-    toast.success("Chart page downloaded!");
+  const handleDownload = async () => {
+    try {
+      await generatePieChartDocument({
+        title: chartTitle,
+        chartType,
+        slices: dataSlices,
+        primaryLineColor,
+        accentLineColor,
+      });
+      toast.success("Chart document downloaded!");
+    } catch (error) {
+      console.error("Error generating document:", error);
+      toast.error("Failed to generate document");
+    }
   };
 
   useKeyboardShortcuts({
