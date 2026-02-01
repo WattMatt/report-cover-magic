@@ -14,6 +14,8 @@ import DocumentHistoryPage from "./pages/DocumentHistoryPage";
 import MultiPageBuilderPage from "./pages/MultiPageBuilderPage";
 import ProfilePage from "./pages/ProfilePage";
 import AuthPage from "./pages/AuthPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import BarLineChartPage from "./pages/BarLineChartPage";
 import PieChartPage from "./pages/PieChartPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -34,6 +36,8 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<AuthPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route element={<MainLayout />}>
                 <Route path="/" element={<CoverPage />} />
                 <Route path="/table-of-contents" element={<TableOfContentsPage />} />
