@@ -16,14 +16,15 @@ const PasswordStrengthIndicator = ({ password }: PasswordStrengthIndicatorProps)
     { label: "Contains uppercase letter", met: /[A-Z]/.test(password) },
     { label: "Contains lowercase letter", met: /[a-z]/.test(password) },
     { label: "Contains a number", met: /[0-9]/.test(password) },
+    { label: "Contains special character (!@#$%^&*)", met: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) },
   ], [password]);
 
   const strength = useMemo(() => {
     const metCount = criteria.filter(c => c.met).length;
     if (metCount === 0) return { level: 0, label: "", color: "bg-muted" };
-    if (metCount === 1) return { level: 1, label: "Weak", color: "bg-destructive" };
-    if (metCount === 2) return { level: 2, label: "Fair", color: "bg-orange-500" };
-    if (metCount === 3) return { level: 3, label: "Good", color: "bg-yellow-500" };
+    if (metCount <= 2) return { level: 1, label: "Weak", color: "bg-destructive" };
+    if (metCount === 3) return { level: 2, label: "Fair", color: "bg-orange-500" };
+    if (metCount === 4) return { level: 3, label: "Good", color: "bg-yellow-500" };
     return { level: 4, label: "Strong", color: "bg-green-500" };
   }, [criteria]);
 
