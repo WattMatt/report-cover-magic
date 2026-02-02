@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Eye, EyeOff } from "lucide-react";
+import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
 
 interface SignUpFormProps {
   email: string;
@@ -72,6 +73,7 @@ const SignUpForm = ({
         {errors.password && (
           <p className="text-sm text-destructive">{errors.password}</p>
         )}
+        <PasswordStrengthIndicator password={password} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="signup-confirm-password">Confirm Password</Label>
