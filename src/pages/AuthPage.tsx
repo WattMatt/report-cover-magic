@@ -14,6 +14,7 @@ import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
 import SignInForm from "@/components/auth/SignInForm";
 import SignUpForm from "@/components/auth/SignUpForm";
 import AuthDivider from "@/components/auth/AuthDivider";
+import FloatingElements from "@/components/auth/FloatingElements";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
@@ -204,7 +205,8 @@ const AuthPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center auth-gradient-bg p-4">
+    <div className="min-h-screen flex items-center justify-center auth-gradient-bg p-4 relative">
+      <FloatingElements />
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
