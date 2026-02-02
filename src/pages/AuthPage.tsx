@@ -20,6 +20,29 @@ const passwordSchema = z.string().min(6, "Password must be at least 6 characters
 
 const OAUTH_TIMEOUT_MS = 15000;
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut" as const,
+    },
+  },
+};
+
 const AuthPage = () => {
   const navigate = useNavigate();
   const { user, signIn, signUp, loading: authLoading } = useAuth();
@@ -211,47 +234,73 @@ const AuthPage = () => {
               </TabsList>
 
               <TabsContent value="signin">
-                <SocialAuthButtons
-                  onGoogleClick={handleGoogleSignIn}
-                  onAppleClick={handleAppleSignIn}
-                  isGoogleLoading={isGoogleLoading}
-                  isAppleLoading={isAppleLoading}
-                  isLoading={isLoading}
-                />
-                <AuthDivider />
-                <SignInForm
-                  email={email}
-                  password={password}
-                  rememberMe={rememberMe}
-                  errors={errors}
-                  isLoading={isLoading}
-                  onEmailChange={setEmail}
-                  onPasswordChange={setPassword}
-                  onRememberMeChange={setRememberMe}
-                  onSubmit={handleSignIn}
-                />
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="space-y-0"
+                >
+                  <motion.div variants={itemVariants}>
+                    <SocialAuthButtons
+                      onGoogleClick={handleGoogleSignIn}
+                      onAppleClick={handleAppleSignIn}
+                      isGoogleLoading={isGoogleLoading}
+                      isAppleLoading={isAppleLoading}
+                      isLoading={isLoading}
+                    />
+                  </motion.div>
+                  <motion.div variants={itemVariants}>
+                    <AuthDivider />
+                  </motion.div>
+                  <motion.div variants={itemVariants}>
+                    <SignInForm
+                      email={email}
+                      password={password}
+                      rememberMe={rememberMe}
+                      errors={errors}
+                      isLoading={isLoading}
+                      onEmailChange={setEmail}
+                      onPasswordChange={setPassword}
+                      onRememberMeChange={setRememberMe}
+                      onSubmit={handleSignIn}
+                    />
+                  </motion.div>
+                </motion.div>
               </TabsContent>
 
               <TabsContent value="signup">
-                <SocialAuthButtons
-                  onGoogleClick={handleGoogleSignIn}
-                  onAppleClick={handleAppleSignIn}
-                  isGoogleLoading={isGoogleLoading}
-                  isAppleLoading={isAppleLoading}
-                  isLoading={isLoading}
-                />
-                <AuthDivider />
-                <SignUpForm
-                  email={email}
-                  password={password}
-                  confirmPassword={confirmPassword}
-                  errors={errors}
-                  isLoading={isLoading}
-                  onEmailChange={setEmail}
-                  onPasswordChange={setPassword}
-                  onConfirmPasswordChange={setConfirmPassword}
-                  onSubmit={handleSignUp}
-                />
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="space-y-0"
+                >
+                  <motion.div variants={itemVariants}>
+                    <SocialAuthButtons
+                      onGoogleClick={handleGoogleSignIn}
+                      onAppleClick={handleAppleSignIn}
+                      isGoogleLoading={isGoogleLoading}
+                      isAppleLoading={isAppleLoading}
+                      isLoading={isLoading}
+                    />
+                  </motion.div>
+                  <motion.div variants={itemVariants}>
+                    <AuthDivider />
+                  </motion.div>
+                  <motion.div variants={itemVariants}>
+                    <SignUpForm
+                      email={email}
+                      password={password}
+                      confirmPassword={confirmPassword}
+                      errors={errors}
+                      isLoading={isLoading}
+                      onEmailChange={setEmail}
+                      onPasswordChange={setPassword}
+                      onConfirmPasswordChange={setConfirmPassword}
+                      onSubmit={handleSignUp}
+                    />
+                  </motion.div>
+                </motion.div>
               </TabsContent>
             </Tabs>
           </CardContent>
