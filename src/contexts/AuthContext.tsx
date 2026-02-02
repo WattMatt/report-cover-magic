@@ -42,7 +42,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    // Handle session cleanup on browser close if "Remember me" was unchecked
+    const handleBeforeUnload = () => {
+      const rememberMe = localStorage.getItem("rememberMe");
+      const tempSession = sessionStorage.getItem("tempSession");
+      
+      // If tempSession exists but rememberMe doesn't, user chose not to be remembered
+      if (tempSession && !rememberMe) {
+        // Clear the session from localStorage
+        localStorage.removeItem("sb-ihaveihiwzmlevpnmcmn-auth-token");
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, []);
 
   const createProfileIfNeeded = async (userId: string) => {
