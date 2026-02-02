@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { z } from "zod";
@@ -11,11 +11,13 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
-import { FileText, Loader2 } from "lucide-react";
+import { FileText, Loader2, AlertCircle } from "lucide-react";
 import wmLogo from "@/assets/wm-logo.jpg";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
+
+const OAUTH_TIMEOUT_MS = 15000; // 15 seconds
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -23,15 +25,42 @@ const AuthPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isAppleLoading, setIsAppleLoading] = useState(false);
+  const [oauthTimedOut, setOauthTimedOut] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
+  const oauthTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (user) {
       navigate("/");
     }
   }, [user, navigate]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (oauthTimeoutRef.current) {
+        clearTimeout(oauthTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const startOAuthTimeout = () => {
+    oauthTimeoutRef.current = setTimeout(() => {
+      setOauthTimedOut(true);
+    }, OAUTH_TIMEOUT_MS);
+  };
+
+  const cancelOAuth = () => {
+    if (oauthTimeoutRef.current) {
+      clearTimeout(oauthTimeoutRef.current);
+    }
+    setIsGoogleLoading(false);
+    setIsAppleLoading(false);
+    setOauthTimedOut(false);
+  };
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -91,25 +120,31 @@ const AuthPage = () => {
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
+    setOauthTimedOut(false);
+    startOAuthTimeout();
+    
     const { error } = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
     
     if (error) {
       toast.error(error.message || "Failed to sign in with Google");
-      setIsGoogleLoading(false);
+      cancelOAuth();
     }
   };
 
   const handleAppleSignIn = async () => {
     setIsAppleLoading(true);
+    setOauthTimedOut(false);
+    startOAuthTimeout();
+    
     const { error } = await lovable.auth.signInWithOAuth("apple", {
       redirect_uri: window.location.origin,
     });
     
     if (error) {
       toast.error(error.message || "Failed to sign in with Apple");
-      setIsAppleLoading(false);
+      cancelOAuth();
     }
   };
 
@@ -129,28 +164,81 @@ const AuthPage = () => {
           transition={{ duration: 0.3 }}
           className="h-16 w-16 rounded-full object-cover mb-6"
         />
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-12 w-12 rounded-full border-4 border-primary/20" />
-          </div>
-          <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        </div>
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-6 text-lg font-medium text-foreground"
-        >
-          {isGoogleLoading ? "Connecting to Google..." : "Connecting to Apple..."}
-        </motion.p>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mt-2 text-sm text-muted-foreground"
-        >
-          You'll be redirected shortly
-        </motion.p>
+        
+        {oauthTimedOut ? (
+          <>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center justify-center h-12 w-12 rounded-full bg-destructive/10"
+            >
+              <AlertCircle className="h-8 w-8 text-destructive" />
+            </motion.div>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="mt-6 text-lg font-medium text-foreground"
+            >
+              Connection timed out
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="mt-2 text-sm text-muted-foreground text-center max-w-xs"
+            >
+              The redirect is taking longer than expected. Please try again.
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mt-6 flex gap-3"
+            >
+              <Button variant="outline" onClick={cancelOAuth}>
+                Cancel
+              </Button>
+              <Button onClick={isGoogleLoading ? handleGoogleSignIn : handleAppleSignIn}>
+                Try Again
+              </Button>
+            </motion.div>
+          </>
+        ) : (
+          <>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-12 w-12 rounded-full border-4 border-primary/20" />
+              </div>
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mt-6 text-lg font-medium text-foreground"
+            >
+              {isGoogleLoading ? "Connecting to Google..." : "Connecting to Apple..."}
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="mt-2 text-sm text-muted-foreground"
+            >
+              You'll be redirected shortly
+            </motion.p>
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+              onClick={cancelOAuth}
+              className="mt-6 text-sm text-muted-foreground hover:text-foreground transition-colors underline"
+            >
+              Cancel
+            </motion.button>
+          </>
+        )}
       </motion.div>
     );
   }
