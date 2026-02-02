@@ -7,8 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
-import { FileText, Loader2 } from "lucide-react";
+import { FileText } from "lucide-react";
 import OAuthLoadingOverlay from "@/components/OAuthLoadingOverlay";
+import AuthLoadingSkeleton from "@/components/auth/AuthLoadingSkeleton";
 import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
 import SignInForm from "@/components/auth/SignInForm";
 import SignUpForm from "@/components/auth/SignUpForm";
@@ -176,11 +177,7 @@ const AuthPage = () => {
   }
 
   if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <AuthLoadingSkeleton />;
   }
 
   return (
