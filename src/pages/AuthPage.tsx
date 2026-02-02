@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 import { FileText, Loader2 } from "lucide-react";
+import wmLogo from "@/assets/wm-logo.jpg";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
@@ -120,11 +121,19 @@ const AuthPage = () => {
         animate={{ opacity: 1 }}
         className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background"
       >
+        <motion.img
+          src={wmLogo}
+          alt="App Logo"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="h-16 w-16 rounded-full object-cover mb-6"
+        />
         <div className="relative">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-16 w-16 rounded-full border-4 border-primary/20" />
+            <div className="h-12 w-12 rounded-full border-4 border-primary/20" />
           </div>
-          <Loader2 className="h-16 w-16 animate-spin text-primary" />
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
         </div>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
