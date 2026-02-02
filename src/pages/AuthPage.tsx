@@ -28,8 +28,9 @@ const AuthPage = () => {
   const [oauthTimedOut, setOauthTimedOut] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
 
   const oauthTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -62,8 +63,8 @@ const AuthPage = () => {
     setOauthTimedOut(false);
   };
 
-  const validateForm = () => {
-    const newErrors: { email?: string; password?: string } = {};
+  const validateForm = (isSignUp = false) => {
+    const newErrors: { email?: string; password?: string; confirmPassword?: string } = {};
 
     const emailResult = emailSchema.safeParse(email);
     if (!emailResult.success) {
@@ -73,6 +74,14 @@ const AuthPage = () => {
     const passwordResult = passwordSchema.safeParse(password);
     if (!passwordResult.success) {
       newErrors.password = passwordResult.error.errors[0].message;
+    }
+
+    if (isSignUp) {
+      if (!confirmPassword) {
+        newErrors.confirmPassword = "Please confirm your password";
+      } else if (password !== confirmPassword) {
+        newErrors.confirmPassword = "Passwords do not match";
+      }
     }
 
     setErrors(newErrors);
@@ -107,7 +116,7 @@ const AuthPage = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateForm(true)) return;
 
     setIsLoading(true);
     const { error } = await signUp(email, password);
@@ -234,10 +243,12 @@ const AuthPage = () => {
                 <SignUpForm
                   email={email}
                   password={password}
+                  confirmPassword={confirmPassword}
                   errors={errors}
                   isLoading={isLoading}
                   onEmailChange={setEmail}
                   onPasswordChange={setPassword}
+                  onConfirmPasswordChange={setConfirmPassword}
                   onSubmit={handleSignUp}
                 />
               </TabsContent>
